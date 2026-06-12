@@ -9,7 +9,6 @@ public:
     QStack<ExprNode*> stack;
     QSet<QString> modifiedVariables;
 
-    ~TreeBuilder();
 
 };
 

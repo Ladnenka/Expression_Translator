@@ -11,7 +11,7 @@ public:
     QString templateDesc;
 
     Function();
-    ~Function();
+    Function(const QString& n, const QStringList& pn, const QString& td);
 };
 
 #endif // FUNCTION_H

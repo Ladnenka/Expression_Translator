@@ -6,4 +6,9 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES += 
+SOURCES += \
+    TEST_simplifyPlus.cpp \
+    ../core/exprnode.cpp \
+    ../core/treesimplifier.cpp \
+    main.cpp
+

@@ -37,9 +37,7 @@ public:
     int errorLine;
 
     Error(ErrorType t, const QString& identifier = "", const QString& dataType = "",
-          const QString& filePath = "", int column = -1, int line = -1)
-        : type(t), id(identifier), dataTypeStr(dataType), errorFilePath(filePath),
-        errorColumn(column), errorLine(line) {}
+          const QString& filePath = "", int column = -1, int line = -1);
 
     QString generateErrorMessage() const;
 };

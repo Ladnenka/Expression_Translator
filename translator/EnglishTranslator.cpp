@@ -1,4 +1,4 @@
-#include "EnglishTranslator.h"
+#include "../EnglishTranslator.h"
 
 EnglishTranslator::EnglishTranslateContext::EnglishTranslateContext(const AbstractTranslator::TranslateContext::LoadedData& data)
     : TranslateContext(data) {}

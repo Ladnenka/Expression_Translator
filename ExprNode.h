@@ -51,7 +51,6 @@ public:
     ExprNode(double num);
     ExprNode(const QString& var);
     ExprNode(ExprType t, const QString& name, const QVector<ExprNode*>& args);
-    ~ExprNode();
 };
 
 #endif // EXPRNODE_H

@@ -1,4 +1,4 @@
-#include "Error.h"
+#include "../Error.h"
 
 Error::Error(ErrorType t, const QString& identifier, const QString& dataType,
              const QString& filePath, int column, int line)

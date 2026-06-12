@@ -1,3 +1,5 @@
-#include "TreeSimplifier.h"
+#include "../TreeSimplifier.h"
 
-TreeSimplifier::TreeSimplifier() {}
+void TreeSimplifier::simplify(ExprNode*& root) {}
+
+void TreeSimplifier::simplifyPlus(ExprNode* root) {}
