@@ -9,6 +9,7 @@ public:
 private:
 
     static void simplifyPlus(ExprNode* root);
+    static void simplifyMinus(ExprNode* root);
 };
 
 #endif // TREESIMPLIFIER_H
