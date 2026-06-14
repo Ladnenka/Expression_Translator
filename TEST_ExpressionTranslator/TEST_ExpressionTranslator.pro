@@ -7,6 +7,7 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += \
+    TEST_SimplifyDivide.cpp \
     TEST_SimplifyMinus.cpp \
     TEST_SimplifyPlus.cpp \
     ../core/exprnode.cpp \
