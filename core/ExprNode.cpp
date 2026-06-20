@@ -1,5 +1,7 @@
 #include "../ExprNode.h"
 
+ExprNode::ExprNode() {}
+
 ExprNode::ExprNode(ExprType t) : type(t) {}
 
 ExprNode::ExprNode(ExprType t, const QString& val) : type(t), value(val) {}

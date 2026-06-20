@@ -13,3 +13,7 @@ AbstractTranslator::TranslateContext::LoadedData::LoadedData() {}
 QString AbstractTranslator::translate(ExprNode* expr) {
     return QString();
 }
+
+QString AbstractTranslator::translateExpression(ExprNode* root) {
+    return QString();
+}

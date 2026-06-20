@@ -42,6 +42,7 @@ protected:
 public:
     AbstractTranslator(TranslateContext* ctx);
     virtual ~AbstractTranslator();
+    QString translateExpression(ExprNode* root);
     QString translate(ExprNode* expr);
 };
 

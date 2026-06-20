@@ -46,6 +46,7 @@ public:
     QString varName;
     QString funcName;
 
+    ExprNode();
     ExprNode(ExprType t);
     ExprNode(ExprType t, const QString& val);
     ExprNode(double num);
