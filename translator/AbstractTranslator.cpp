@@ -9,3 +9,7 @@ AbstractTranslator::AbstractTranslator(TranslateContext* ctx) : context(ctx) {
 AbstractTranslator::~AbstractTranslator() { delete context; }
 
 AbstractTranslator::TranslateContext::LoadedData::LoadedData() {}
+
+QString AbstractTranslator::translate(ExprNode* expr) {
+    return QString();
+}

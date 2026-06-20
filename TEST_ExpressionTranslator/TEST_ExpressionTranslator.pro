@@ -5,12 +5,13 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += \
-    main.cpp \
-    Testutils.cpp \
+    TestUtils.cpp \
     TEST_SimplifyPlus.cpp \
     TEST_SimplifyMinus.cpp \
     TEST_SimplifyDivide.cpp \
     TEST_GetFunctionDescription.cpp \
+    TEST_Translate.cpp \
+    main.cpp \
     $$PWD/../core/ExprNode.cpp \
     $$PWD/../core/TreeSimplifier.cpp \
     $$PWD/../translator/AbstractTranslator.cpp \
