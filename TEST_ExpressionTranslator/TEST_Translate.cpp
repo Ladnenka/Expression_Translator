@@ -262,7 +262,6 @@ void TEST_Translate::Test11_MultiplyDiffByVar() {
 
 //Test 12: Plus(Minus(Var("x"), Var("y")), Var("z"))
 //        → "Sum of (Difference between x and y) and z"
-// simplify не вызывается, Minus не раскрывается
 void TEST_Translate::Test12_SumOfDiffAndVar() {
     auto data = makeData({}, { Variable("x","x","int"), Variable("y","y","int"), Variable("z","z","int") });
     auto* ctx = new EnglishTranslator::EnglishTranslateContext(data);

@@ -22,6 +22,9 @@ private slots:
     void Test9_UnaryMinusNoWrap();
     void Test10_DuplicateParamInTemplate();
     void Test11_ArgIsExpression();
+    void Test12_PowerArgWrapped();
+    void Test13_IndexArgNoWrap();
+    void Test14_TwoArgsBothWrapped();
 };
 
 //Test 1: Вызов известной функции без аргументов
@@ -260,6 +263,85 @@ void TEST_GetFuncDescription::Test11_ArgIsExpression() {
 
     delete plus;
     delete y;
+    delete translator;
+}
+
+//Test 12: Аргумент — выражение со степенью (требует скобок)
+// getFuncDescription("ln", [Power(Var("a"), Number("2"))]) → "natural logarithm of (Exponentiation of a to 2)"
+void TEST_GetFuncDescription::Test12_PowerArgWrapped() {
+    auto data = makeData(
+        { Function("ln", {"x"}, "natural logarithm of {x}") },
+        { Variable("a", "a", "int") }
+        );
+    auto* ctx = new EnglishTranslator::EnglishTranslateContext(data);
+    EnglishTranslator* translator = new EnglishTranslator(ctx);
+
+    ExprNode* power = new ExprNode(ExprNode::POWER);
+    ExprNode* a = new ExprNode(ExprNode::VARIABLE); a->varName = "a";
+    ExprNode* two = new ExprNode(ExprNode::NUMBER, QString("2"));
+    power->operands.append(a);
+    power->operands.append(two);
+    QVector<ExprNode*> operands = { power };
+
+    QString result = ctx->getFuncDescription("ln", operands);
+    QCOMPARE(result, QString("natural logarithm of (Exponentiation of a to 2)"));
+
+    delete power;
+    delete translator;
+}
+
+//Test 13: Аргумент — элемент массива (без скобок)
+// getFuncDescription("process", [Index(Var("arr"), Number("0"))]) → "processing Element at index 0 in array arr"
+void TEST_GetFuncDescription::Test13_IndexArgNoWrap() {
+    auto data = makeData(
+        { Function("process", {"item"}, "processing {item}") },
+        { Variable("arr", "arr", "int[]") }
+        );
+    auto* ctx = new EnglishTranslator::EnglishTranslateContext(data);
+    EnglishTranslator* translator = new EnglishTranslator(ctx);
+
+    ExprNode* index = new ExprNode(ExprNode::INDEX);
+    ExprNode* arr = new ExprNode(ExprNode::VARIABLE); arr->varName = "arr";
+    ExprNode* zero = new ExprNode(ExprNode::NUMBER, QString("0"));
+    index->operands.append(arr);
+    index->operands.append(zero);
+    QVector<ExprNode*> operands = { index };
+
+    QString result = ctx->getFuncDescription("process", operands);
+    QCOMPARE(result, QString("processing Element at index 0 in array arr"));
+
+    delete index;
+    delete translator;
+}
+
+//Test 14: Два аргумента, оба требующие скобок (умножение и вложенная функция)
+// getFuncDescription("combine", [Multiply(Var("a"), Var("b")), Function("calc", [])]) → "combine (Product of a and b) with (calc result)"
+void TEST_GetFuncDescription::Test14_TwoArgsBothWrapped() {
+    auto data = makeData(
+        {
+            Function("combine", {"x", "y"}, "combine {x} with {y}"),
+            Function("calc", {}, "calc result")
+        },
+        { Variable("a", "a", "int"), Variable("b", "b", "int") }
+        );
+    auto* ctx = new EnglishTranslator::EnglishTranslateContext(data);
+    EnglishTranslator* translator = new EnglishTranslator(ctx);
+
+    ExprNode* multiply = new ExprNode(ExprNode::MULTIPLY);
+    ExprNode* a = new ExprNode(ExprNode::VARIABLE); a->varName = "a";
+    ExprNode* b = new ExprNode(ExprNode::VARIABLE); b->varName = "b";
+    multiply->operands.append(a);
+    multiply->operands.append(b);
+
+    ExprNode* calc = new ExprNode(ExprNode::FUNCTION, "calc", QVector<ExprNode*>{});
+
+    QVector<ExprNode*> operands = { multiply, calc };
+
+    QString result = ctx->getFuncDescription("combine", operands);
+    QCOMPARE(result, QString("combine (Product of a and b) with (calc result)"));
+
+    delete multiply;
+    delete calc;
     delete translator;
 }
 
