@@ -5,3 +5,9 @@ EnglishTranslator::EnglishTranslateContext::EnglishTranslateContext(const Abstra
 
 EnglishTranslator::EnglishTranslator(EnglishTranslateContext* ctx)
     : AbstractTranslator(ctx) {}
+
+QString EnglishTranslator::EnglishTranslateContext::getFuncDescription(
+    const QString& funcName, const QVector<ExprNode*>& operands)
+{
+    return QString();
+}

@@ -9,6 +9,8 @@ public:
     public:
 
         EnglishTranslateContext(const TranslateContext::LoadedData& data);
+
+        QString getFuncDescription(const QString& funcName, const QVector<ExprNode*>& operands) override;
     };
 
     EnglishTranslator(EnglishTranslateContext* ctx);

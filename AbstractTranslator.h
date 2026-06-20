@@ -5,6 +5,7 @@
 #include <QHash>
 #include <QString>
 #include <QStringList>
+#include "ExprNode.h"
 
 class AbstractTranslator
 {
@@ -23,7 +24,9 @@ public:
         };
 
         TranslateContext(const LoadedData& data) : loadedData(data) {}
+        virtual ~TranslateContext();
 
+        virtual QString getFuncDescription(const QString& funcName, const QVector<ExprNode*>& operands) = 0;
 
         AbstractTranslator* translator = nullptr;
 
@@ -38,7 +41,7 @@ protected:
 
 public:
     AbstractTranslator(TranslateContext* ctx);
-
+    virtual ~AbstractTranslator();
 };
 
 #endif // ABSTRACTTRANSLATOR_H

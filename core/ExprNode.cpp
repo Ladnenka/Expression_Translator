@@ -10,3 +10,7 @@ ExprNode::ExprNode(const QString& var) : type(VARIABLE), varName(var) {}
 
 ExprNode::ExprNode(ExprType t, const QString& name, const QVector<ExprNode*>& args)
     : type(t), funcName(name), operands(args) {}
+
+ExprNode::~ExprNode() {
+    for (ExprNode* child : operands) delete child;
+}
