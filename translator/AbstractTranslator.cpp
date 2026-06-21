@@ -10,10 +10,16 @@ AbstractTranslator::~AbstractTranslator() { delete context; }
 
 AbstractTranslator::TranslateContext::LoadedData::LoadedData() {}
 
-QString AbstractTranslator::translate(ExprNode* expr) {
-    return QString();
+QString AbstractTranslator::translateExpression(ExprNode* root) {
+
+    preLines.clear();
+    postLines.clear();
+
+    QString mainResult = translate(root);
+
+    return (preLines + QStringList{mainResult} + postLines).join("\n");
 }
 
-QString AbstractTranslator::translateExpression(ExprNode* root) {
+QString AbstractTranslator::translate(ExprNode* expr) {
     return QString();
 }

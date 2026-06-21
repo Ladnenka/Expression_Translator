@@ -1,11 +1,16 @@
 #include "../TreeSimplifier.h"
 
 void TreeSimplifier::simplify(ExprNode*& root) {
+    //Проверить, что указатель не является пустым
     if (!root) return;
 
+    //Для каждого узла, что является дочерним для переданного узла
     for (int i = 0; i < root->operands.size(); i++)
+        //Вызвать рекурсивный метод упрощения
         simplify(root->operands[i]);
 
+    //Если тип узла поддерживает упрощение
+    //Вызвать соответствующий метод упрощения узла
     if (root->type == ExprNode::PLUS)
         simplifyPlus(root);
     else if (root->type == ExprNode::MINUS)
