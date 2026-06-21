@@ -2,6 +2,8 @@ QT = core
 
 CONFIG += c++17 cmdline
 
+DESTDIR = $$OUT_PWD
+
 SOURCES += \
     MAIN.cpp \
     models/Variable.cpp \

@@ -121,3 +121,7 @@ bool TreeBuilder::buildFunctionCall(int position,
                                     QList<Error>& errors) {
     return true;
 }
+
+bool TreeBuilder::checkSideEffect(ExprNode* operand, int position, QList<Error>& errors) {
+    return true;
+}
