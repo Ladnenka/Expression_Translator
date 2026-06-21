@@ -24,9 +24,6 @@ bool loadExpressionFromFile(const QString& path, QStringList& expressions, QList
         if (expressions[i].trimmed().length() > 1000) {
             errors.append(Error(Error::ExpressionTooLong, "", "", path));
 
-            printf("Error: Expression length exceeds 1000 characters in file %s (Line %d).\n",
-                   qPrintable(path), i + 1);
-
             expressions.clear();
             return false;
         }
