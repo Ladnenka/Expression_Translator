@@ -11,7 +11,7 @@ JsonDataLoader::loadFromJson(const QString& varsPath, const QString& funcsPath, 
         QFile file(varsPath);
         //Если файл не существует или не удалось открыть
         if (!file.exists() || !file.open(QIODevice::ReadOnly)) {
-            //Добавить соответствующую ошибку в массив ошибок и завершить выполнение метода
+            //Добавить соответствующую ошибку в массив ошибок
             errors.append(Error(Error::FileNotExist, "", "", varsPath));
             return data;
         }
@@ -22,7 +22,7 @@ JsonDataLoader::loadFromJson(const QString& varsPath, const QString& funcsPath, 
 
         //Если JSON-документ не является массивом
         if (!document.isArray()) {
-            //Добавить соответствующую ошибку в массив ошибок и завершить выполнение метода
+            //Добавить соответствующую ошибку в массив ошибок
             errors.append(Error(Error::JsonParseError, "", "", varsPath));
             return data;
         }
@@ -39,7 +39,7 @@ JsonDataLoader::loadFromJson(const QString& varsPath, const QString& funcsPath, 
         QFile file(funcsPath);
         //Если файл не существует или не удалось открыть
         if (!file.exists() || !file.open(QIODevice::ReadOnly)) {
-            //Добавить соответствующую ошибку в массив ошибок и завершить выполнение метода
+            //Добавить соответствующую ошибку в массив ошибок
             errors.append(Error(Error::FileNotExist, "", "", funcsPath));
             return data;
         }
@@ -50,7 +50,7 @@ JsonDataLoader::loadFromJson(const QString& varsPath, const QString& funcsPath, 
 
         //Если JSON-документ не является массивом
         if (!document.isArray()) {
-            //Добавить соответствующую ошибку в массив ошибок и завершить выполнение метода
+            //Добавить соответствующую ошибку в массив ошибок
             errors.append(Error(Error::JsonParseError, "", "", funcsPath));
             return data;
         }
