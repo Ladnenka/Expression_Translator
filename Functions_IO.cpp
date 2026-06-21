@@ -19,15 +19,19 @@ bool loadExpressionFromFile(const QString& path, QStringList& expressions, QList
 
     expressions = fullContent.split('\n', Qt::SkipEmptyParts);
 
-    for (int i = 0; i < expressions.size(); ++i) {
+    if (expressions.size() > 10) {
+        errors.append(Error(Error::TooManyExpressions, "", "", ""));
+        return false;
+    }
 
+    for (int i = 0; i < expressions.size(); ++i) {
         if (expressions[i].trimmed().length() > 1000) {
             errors.append(Error(Error::ExpressionTooLong, "", "", path));
-
             expressions.clear();
             return false;
         }
     }
+
     return true;
 }
 

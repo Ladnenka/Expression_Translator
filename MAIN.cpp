@@ -26,11 +26,9 @@ int main(int argc, char *argv[]) {
     }
 
     //Считать из параметров командной строки все пути к файлам
-    QString inputPath  = QString::fromLocal8Bit(argv[1]);
-    QString outputPath = QString::fromLocal8Bit(argv[2]);
+    QString inputPath  = QString::fromLocal8Bit(argv[1]); QString outputPath = QString::fromLocal8Bit(argv[2]);
 
-    QString varsPath;
-    QString funcsPath;
+    QString varsPath; QString funcsPath;
 
     if (argc >= 4) varsPath = QString::fromLocal8Bit(argv[3]);
     if (argc >= 5) funcsPath = QString::fromLocal8Bit(argv[4]);
@@ -40,17 +38,6 @@ int main(int argc, char *argv[]) {
     if (!loadExpressionFromFile(inputPath, expressions, errors)) {
         //Вывести ошибку об прочтении файла
         printf("\nCOMPILATION ERRORS FOUND\n");
-        for (const Error& err : errors) {
-            printf("%s\n", qPrintable(err.generateErrorMessage()));
-        }
-        //Завершить выполнение метода
-        return 1;
-    }
-
-    if (expressions.size() > 10) {
-        errors.append(Error(Error::TooManyExpressions, "", "", ""));
-        printf("\nCOMPILATION ERRORS FOUND\n");
-
         for (const Error& err : errors) {
             printf("%s\n", qPrintable(err.generateErrorMessage()));
         }
@@ -74,14 +61,6 @@ int main(int argc, char *argv[]) {
 
     QStringList totalResults;
     bool globalError = false;
-
-    printf("\\n");
-    printf("Input File:  %s\n", qPrintable(inputPath));
-    printf("Output File: %s\n", qPrintable(outputPath));
-    printf("Expressions count: %d\n", expressions.size());
-    if (!varsPath.isEmpty())  printf("Vars JSON:   %s\n", qPrintable(varsPath));
-    if (!funcsPath.isEmpty()) printf("Funcs JSON:  %s\n", qPrintable(funcsPath));
-    printf("\n");
 
     //Для каждого выражения из входного файла с выражениями
     for (int i = 0; i < expressions.size(); ++i) {
