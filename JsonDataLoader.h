@@ -2,6 +2,10 @@
 #define JSONDATALOADER_H
 #include "AbstractTranslator.h"
 #include "Error.h"
+#include <QJsonDocument>
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonObject>
 
 class JsonDataLoader {
 public:
@@ -10,6 +14,11 @@ public:
                                                                          const QString& funcsPath,
                                                                          QList<Error>& errors);
 
+    static bool loadVariables(const QJsonArray& array, const QString& filePath,
+                              AbstractTranslator::TranslateContext::LoadedData& data, QList<Error>& errors);
+
+    static bool loadFunctions(const QJsonArray& array, const QString& filePath,
+                              AbstractTranslator::TranslateContext::LoadedData& data, QList<Error>& errors);
 };
 
 #endif // JSONDATALOADER_H
