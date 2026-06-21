@@ -1,3 +1,6 @@
 build-debug/ 
 *.pro.user 
 build/ 
+deploy/
+run.bat
+run_tests.bat
