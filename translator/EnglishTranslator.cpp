@@ -119,7 +119,9 @@ QString EnglishTranslator::translateSum(const QVector<QString>& parts) {
     return result;
 }
 
-QString EnglishTranslator::translateSub(const QVector<QString>& parts)                              { return QString(); }
+QString EnglishTranslator::translateSub(const QVector<QString>& parts) {
+    return "Difference between " + parts[0] + " and " + parts[1];
+}
 
 QString EnglishTranslator::translateMultiply(const QVector<QString>& parts) {
     //Проверить количество элементов в списке строк
@@ -142,10 +144,22 @@ QString EnglishTranslator::translateMultiply(const QVector<QString>& parts) {
     return result;
 }
 
-QString EnglishTranslator::translateDivide(const QVector<QString>& parts)                           { return QString(); }
-QString EnglishTranslator::translateModulo(const QVector<QString>& parts)                           { return QString(); }
-QString EnglishTranslator::translatePower(const QVector<QString>& parts)                            { return QString(); }
-QString EnglishTranslator::translateUnaryMinus(const QVector<QString>& parts)                       { return QString(); }
+QString EnglishTranslator::translateDivide(const QVector<QString>& parts) {
+    return "Division of " + parts[0] + " by " + parts[1];
+}
+
+QString EnglishTranslator::translateModulo(const QVector<QString>& parts) {
+    return "Remainder of " + parts[0] + " divided by " + parts[1];
+}
+
+QString EnglishTranslator::translatePower(const QVector<QString>& parts) {
+    return "Exponentiation of " + parts[0] + " to " + parts[1];
+}
+
+QString EnglishTranslator::translateUnaryMinus(const QVector<QString>& parts) {
+    return "negative of " + parts[0];
+}
+
 QString EnglishTranslator::translateLogicalAnd(const QVector<QString>& parts)                       { return QString(); }
 QString EnglishTranslator::translateLogicalOr(const QVector<QString>& parts)                        { return QString(); }
 QString EnglishTranslator::translateLogicalNot(ExprNode* expr, const QVector<QString>& parts)       { return QString(); }
