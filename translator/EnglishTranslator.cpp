@@ -218,18 +218,54 @@ QString EnglishTranslator::translateLogicalNot(ExprNode* expr,
     }
 }
 
-QString EnglishTranslator::translateLess(const QVector<QString>& parts)                             { return QString(); }
-QString EnglishTranslator::translateGreater(const QVector<QString>& parts)                          { return QString(); }
-QString EnglishTranslator::translateLessEq(const QVector<QString>& parts)                           { return QString(); }
-QString EnglishTranslator::translateGreaterEq(const QVector<QString>& parts)                        { return QString(); }
-QString EnglishTranslator::translateEqual(const QVector<QString>& parts)                            { return QString(); }
-QString EnglishTranslator::translateNotEqual(const QVector<QString>& parts)                         { return QString(); }
-QString EnglishTranslator::translateAssign(const QVector<QString>& parts)                           { return QString(); }
-QString EnglishTranslator::translatePlusAssign(const QVector<QString>& parts)                       { return QString(); }
-QString EnglishTranslator::translateMinusAssign(const QVector<QString>& parts)                      { return QString(); }
-QString EnglishTranslator::translateMultAssign(const QVector<QString>& parts)                       { return QString(); }
-QString EnglishTranslator::translateDivAssign(const QVector<QString>& parts)                        { return QString(); }
-QString EnglishTranslator::translateModAssign(const QVector<QString>& parts)                        { return QString(); }
+QString EnglishTranslator::translateLess(const QVector<QString>& parts) {
+    return parts[0] + " is less than " + parts[1];
+}
+
+QString EnglishTranslator::translateGreater(const QVector<QString>& parts) {
+    return parts[0] + " is greater than " + parts[1];
+}
+
+QString EnglishTranslator::translateLessEq(const QVector<QString>& parts) {
+    return parts[0] + " is less than or equal to " + parts[1];
+}
+
+QString EnglishTranslator::translateGreaterEq(const QVector<QString>& parts) {
+    return parts[0] + " is greater than or equal to " + parts[1];
+}
+
+QString EnglishTranslator::translateEqual(const QVector<QString>& parts) {
+    return parts[0] + " equals " + parts[1];
+}
+
+QString EnglishTranslator::translateNotEqual(const QVector<QString>& parts) {
+    return parts[0] + " does not equal " + parts[1];
+}
+
+QString EnglishTranslator::translateAssign(const QVector<QString>& parts) {
+    return "assignment of " + parts[1] + " to " + parts[0];
+}
+
+QString EnglishTranslator::translatePlusAssign(const QVector<QString>& parts) {
+    return "assignment of sum of " + parts[0] + " and " + parts[1] + " to " + parts[0];
+}
+
+QString EnglishTranslator::translateMinusAssign(const QVector<QString>& parts) {
+    return "assignment of difference between " + parts[0] + " and " + parts[1] + " to " + parts[0];
+}
+
+QString EnglishTranslator::translateMultAssign(const QVector<QString>& parts) {
+    return "assignment of product of " + parts[0] + " and " + parts[1] + " to " + parts[0];
+}
+
+QString EnglishTranslator::translateDivAssign(const QVector<QString>& parts) {
+    return "assignment of division of " + parts[0] + " by " + parts[1] + " to " + parts[0];
+}
+
+QString EnglishTranslator::translateModAssign(const QVector<QString>& parts) {
+    return "assignment of remainder of division of " + parts[0] + " by " + parts[1] + " to " + parts[0];
+}
+
 QString EnglishTranslator::translatePreInc(const QVector<QString>& parts)                           { return QString(); }
 QString EnglishTranslator::translatePostInc(const QVector<QString>& parts)                          { return QString(); }
 QString EnglishTranslator::translatePreDec(const QVector<QString>& parts)                           { return QString(); }
