@@ -57,6 +57,10 @@ QString EnglishTranslator::EnglishTranslateContext::getVarDescription(const QStr
     return varName;
 }
 
+QString EnglishTranslator::EnglishTranslateContext::getVarType(const QString& varName) {
+    return QString();
+}
+
 bool EnglishTranslator::needParentheses(ExprNode::ExprType parentType,
                                         ExprNode::ExprType operandType) {
     switch (parentType) {
@@ -286,6 +290,53 @@ QString EnglishTranslator::translatePostDec(const QVector<QString>& parts) {
     return parts[0];
 }
 
-QString EnglishTranslator::translateAddressOf(const QVector<QString>& parts)                        { return QString(); }
-QString EnglishTranslator::translateDereference(ExprNode* expr, const QVector<QString>& parts)      { return QString(); }
-QString EnglishTranslator::translateIndex(const QVector<QString>& parts)                            { return QString(); }
+QString EnglishTranslator::translateAddressOf(const QVector<QString>& parts) {
+    return "Address of " + parts[0];
+}
+
+QString EnglishTranslator::translateDereference(ExprNode* expr,
+                                                const QVector<QString>& parts) {
+    //Взять указатель на первый привязанный узел к переданному и сохранить его как дочерний узел
+    ExprNode* child = expr->operands[0];
+
+    /*Если тип дочернего узла равен сложению, у него ровно два привязанных узла, тип первого привязанного \
+        к дочернему узла равен переменной и тип данных этой переменной "массив"*/
+    if (child->type == ExprNode::PLUS && child->operands.size() == 2 &&
+        child->operands[0]->type == ExprNode::VARIABLE &&
+        context->getVarType(child->operands[0]->varName).endsWith("[]")) {
+        //Выполнить перевод первого привязанного узла к дочернему узлу и сохранить его
+        QString arr = translate(child->operands[0]);
+        //Выполнить перевод второго привязанного узла к дочернему узлу и сохранить его
+        QString idx = translate(child->operands[1]);
+
+        /*Вернуть строку, состоящую из строки "element of array", строки перевода первого привязанного узла, \
+        строки "with offset" и строки перевода второго привязанного узла*/
+        return "Element of array " + arr + " with offset " + idx;
+    }
+
+    /*Если тип дочернего узла равен сложению и у него ровно два привязанных узла и \
+        тип первого привязанного к дочернему узла равен операции получения адреса*/
+    if (child->type == ExprNode::PLUS && child->operands.size() == 2 &&
+        child->operands[0]->type == ExprNode::ADDRESS_OF) {
+        //Выполнить перевод первого узла, привязанного к дочернему узлу, и сохранить его
+        QString var    = translate(child->operands[0]->operands[0]);
+        //Выполнить перевод второго узла, привязанного к дочернему узлу, и сохранить его
+        QString offset = translate(child->operands[1]);
+
+        /*Вернуть строку, состоящую из строки "element at offset", строки перевода первого привязанного узла, \
+            строки "from address of" и строки перевода второго привязанного узла*/
+        return "Element at offset " + offset + " from address of " + var;
+    }
+
+    //Если результат перевода дочернего узла начинается с "pointer to"
+    if (parts[0].startsWith("pointer to "))
+        //Вернуть строку перевода без префикса "pointer to"
+        return parts[0].mid(11);
+
+    //Вернуть строку, состоящую из "value pointed to by " и строки переведённого дочернего узла
+    return "Value pointed to by " + parts[0];
+}
+
+QString EnglishTranslator::translateIndex(const QVector<QString>& parts) {
+    return "Element at index " + parts[1] + " in array " + parts[0];
+}

@@ -26,6 +26,7 @@ public:
         TranslateContext(const LoadedData& data) : loadedData(data) {}
         virtual ~TranslateContext();
 
+        virtual QString getVarType(const QString& varName) = 0;
         virtual QString getVarDescription(const QString& varName) = 0;
         virtual QString getFuncDescription(const QString& funcName, const QVector<ExprNode*>& operands) = 0;
 

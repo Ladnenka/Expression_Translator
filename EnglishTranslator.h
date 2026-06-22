@@ -10,6 +10,7 @@ public:
 
         EnglishTranslateContext(const TranslateContext::LoadedData& data);
 
+        QString getVarType(const QString& varName) override;
         QString getVarDescription(const QString& varName) override;
         QString getFuncDescription(const QString& funcName, const QVector<ExprNode*>& operands) override;
     };
