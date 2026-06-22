@@ -57,7 +57,46 @@ QString EnglishTranslator::EnglishTranslateContext::getVarDescription(const QStr
     return varName;
 }
 
-bool EnglishTranslator::needParentheses(ExprNode::ExprType exprType, ExprNode::ExprType operandType) { return false; }
+bool EnglishTranslator::needParentheses(ExprNode::ExprType parentType,
+                                        ExprNode::ExprType operandType) {
+    switch (parentType) {
+    case ExprNode::DIVIDE:
+        return operandType == ExprNode::PLUS     ||
+               operandType == ExprNode::MINUS    ||
+               operandType == ExprNode::MULTIPLY ||
+               operandType == ExprNode::DIVIDE   ||
+               operandType == ExprNode::FUNCTION;
+
+    case ExprNode::MULTIPLY:
+        return operandType == ExprNode::PLUS  ||
+               operandType == ExprNode::MINUS ||
+               operandType == ExprNode::FUNCTION ||
+               operandType == ExprNode::DIVIDE;
+
+    case ExprNode::PLUS:
+        return operandType == ExprNode::MINUS    ||
+               operandType == ExprNode::MULTIPLY ||
+               operandType == ExprNode::DIVIDE   ||
+               operandType == ExprNode::FUNCTION;
+
+    case ExprNode::MINUS:
+        return operandType == ExprNode::PLUS     ||
+               operandType == ExprNode::MINUS    ||
+               operandType == ExprNode::MULTIPLY ||
+               operandType == ExprNode::DIVIDE   ||
+               operandType == ExprNode::FUNCTION;
+
+    case ExprNode::UNARY_MINUS:
+        return operandType == ExprNode::PLUS     ||
+               operandType == ExprNode::MINUS    ||
+               operandType == ExprNode::MULTIPLY ||
+               operandType == ExprNode::DIVIDE   ||
+               operandType == ExprNode::FUNCTION;
+
+    default:
+        return false;
+    }
+}
 
 QString EnglishTranslator::translateSum(const QVector<QString>& parts)                              { return QString(); }
 QString EnglishTranslator::translateSub(const QVector<QString>& parts)                              { return QString(); }
