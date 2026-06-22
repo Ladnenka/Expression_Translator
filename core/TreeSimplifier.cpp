@@ -197,9 +197,48 @@ void TreeSimplifier::simplifyDivide(ExprNode* root) {
     }
 }
 
-void TreeSimplifier::simplifyPointer(ExprNode*& root) {}
+void TreeSimplifier::simplifyPointer(ExprNode*& root) {
+    //Проверить количество привязанных узлов к переданному узлу
+    //Если количество привязанных узлов не равно одному
+    if (!root || root->operands.size() != 1) return;
 
-void TreeSimplifier::simplifyUnaryMinus(ExprNode*& root) {}
+
+    //Достать указатель на первый привязанный узел к переданному узлу и сохранить его как узел ребёнок
+    ExprNode* child = root->operands[0];
+
+
+    //Установить флаг первой проверки, что тип переданного узла разыменование и тип узла ребёнка взятие адреса
+    bool needSimplify1 = root->type == ExprNode::DEREFERENCE && child->type == ExprNode::ADDRESS_OF;
+    //Установить флаг второй проверки, что тип переданного узла взятие адреса и тип узла ребёнка разыменование
+    bool needSimplify2 = root->type == ExprNode::ADDRESS_OF && child->type == ExprNode::DEREFERENCE;
+
+    //Если хотя бы один из флагов проверок установлен в истину
+    if (needSimplify1 || needSimplify2) {
+        //Заменить переданный узел на первый дочерний узел ребёнка
+        ExprNode* inner = child->operands[0];
+
+        child->operands.clear();
+        delete child;
+        root->operands.clear();
+        delete root;
+        root = inner;
+        return;
+    }
+}
+
+void TreeSimplifier::simplifyUnaryMinus(ExprNode*& root) {
+    if (root->type != ExprNode::UNARY_MINUS) return;
+    if (root->operands[0]->type != ExprNode::UNARY_MINUS) return;
+
+    ExprNode* doubleNeg = root->operands[0];
+    ExprNode* inner = doubleNeg->operands[0];
+
+    doubleNeg->operands.clear();
+    delete doubleNeg;
+    root->operands.clear();
+    delete root;
+    root = inner;
+}
 
 ExprNode* TreeSimplifier::makeNegative(ExprNode* op) {
     ExprNode();
