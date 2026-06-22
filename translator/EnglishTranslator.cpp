@@ -266,10 +266,26 @@ QString EnglishTranslator::translateModAssign(const QVector<QString>& parts) {
     return "assignment of remainder of division of " + parts[0] + " by " + parts[1] + " to " + parts[0];
 }
 
-QString EnglishTranslator::translatePreInc(const QVector<QString>& parts)                           { return QString(); }
-QString EnglishTranslator::translatePostInc(const QVector<QString>& parts)                          { return QString(); }
-QString EnglishTranslator::translatePreDec(const QVector<QString>& parts)                           { return QString(); }
-QString EnglishTranslator::translatePostDec(const QVector<QString>& parts)                          { return QString(); }
+QString EnglishTranslator::translatePreInc(const QVector<QString>& parts) {
+    preLines << "Increment " + parts[0];
+    return parts[0];
+}
+
+QString EnglishTranslator::translatePostInc(const QVector<QString>& parts) {
+    postLines << "Increment " + parts[0];
+    return parts[0];
+}
+
+QString EnglishTranslator::translatePreDec(const QVector<QString>& parts) {
+    preLines << "Decrement " + parts[0];
+    return parts[0];
+}
+
+QString EnglishTranslator::translatePostDec(const QVector<QString>& parts) {
+    postLines << "Decrement " + parts[0];
+    return parts[0];
+}
+
 QString EnglishTranslator::translateAddressOf(const QVector<QString>& parts)                        { return QString(); }
 QString EnglishTranslator::translateDereference(ExprNode* expr, const QVector<QString>& parts)      { return QString(); }
 QString EnglishTranslator::translateIndex(const QVector<QString>& parts)                            { return QString(); }
