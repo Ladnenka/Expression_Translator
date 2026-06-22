@@ -231,5 +231,21 @@ bool TreeBuilder::buildFunctionCall(int position,
 }
 
 bool TreeBuilder::checkSideEffect(ExprNode* operand, int position, QList<Error>& errors) {
+    //Проверить переданный указатель на узел верхний узел в стеке
+    //Если проверяемый узел не переменная и указатель на узел не пустой, то завершить выполнение метода
+    if (!operand || operand->type != ExprNode::VARIABLE) return true;
+
+    //Сохранить значение узла как имя переменной
+    QString varName = operand->varName;
+    //Проверить находится ли данная переменная в списке уже изменённых переменных
+    //Если переменная была найдена в списке
+    if (modifiedVariables.contains(varName)) {
+        //Сохранить соответствующую ошибку в массив ошибок
+        errors.append(Error(Error::SideEffectConflict, varName, "", "", -1, position));
+        return false;
+    }
+    //Добавить переменную в список изменённых переменных
+    modifiedVariables.insert(varName);
     return true;
 }
+
