@@ -6,14 +6,55 @@ EnglishTranslator::EnglishTranslateContext::EnglishTranslateContext(const Abstra
 EnglishTranslator::EnglishTranslator(EnglishTranslateContext* ctx)
     : AbstractTranslator(ctx) {}
 
-QString EnglishTranslator::EnglishTranslateContext::getFuncDescription(
-    const QString& funcName, const QVector<ExprNode*>& operands)
-{
-    return QString();
+QString EnglishTranslator::EnglishTranslateContext::getFuncDescription(const QString& funcName, const QVector<ExprNode*>& operands) {
+    //Для каждой функции из списка функций в структуре загруженных данных
+    for (const Function& f : loadedData.functions) {
+        //Если переданное имя функции равно текущему имени функции
+        if (f.name == funcName) {
+            //Создать новый список строк для переведённых аргументов
+            QStringList args;
+            //Для каждого привязанного узла из списка переданных узлов аргументов функции
+            for (ExprNode* op : operands) {
+                //Выполнить перевод узла через переводчик и сохранить результат
+                QString translated = translator->translate(op);
+
+                //Если тип текущего привязанного узла равен сложению вычитанию, умножению, делению, возведению в степень или остатку от деления
+                //Добавить сохранённый результат в список строк, обернув его в круглые скобки
+                if (op->type == ExprNode::PLUS || op->type == ExprNode::MINUS ||
+                    op->type == ExprNode::MULTIPLY || op->type == ExprNode::DIVIDE ||
+                    op->type == ExprNode::POWER || op->type == ExprNode::MODULO  || op->type == ExprNode::FUNCTION)
+                    args << "(" + translated + ")";
+                //Иначе
+                else
+                    //Добавить сохранённый результат перевода в список без изменений
+                    args << translated;
+            }
+
+            //Сохранить шаблон описания текущей функции в результирующую строку
+            QString result = f.templateDesc;
+            // Для каждой пары «параметр–аргумент» выполнить замену имени параметра в результирующей строке
+            for (int i = 0; i < args.size() && i < f.paramNames.size(); i++)
+                result.replace("{" + f.paramNames[i] + "}", args[i]);
+            //Вернуть результирующую строку
+            return result;
+        }
+    }
+
+    //Создать новый список строк для аргументов функции по умолчанию
+    QStringList args;
+    //Для каждого привязанного узла из переданного вектора дочерних узлов
+    for (ExprNode* op : operands) {
+        //Выполнить перевод текущего привязанного узла через переводчик и добавить результат в список строк
+        args << translator->translate(op);
+    }
+    //Возвратить строку, состоящую из переданного имени функции, открывающей круглой скобки, всех элементов списка строк аргументов функции и закрывающей скобки
+    return funcName + "(" + args.join(", ") + ")";
 }
 
 QString EnglishTranslator::EnglishTranslateContext::getVarDescription(const QString& varName) {
-    return QString();
+    for (const Variable& v : loadedData.variables)
+        if (v.name == varName) return v.description;
+    return varName;
 }
 
 bool EnglishTranslator::needParentheses(ExprNode::ExprType exprType, ExprNode::ExprType operandType) { return false; }
