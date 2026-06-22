@@ -213,9 +213,17 @@ bool JsonDataLoader::checkCommonFields(const QJsonObject& object, const QString&
 }
 
 bool JsonDataLoader::isValidName(const QString& name) {
+    if (name.length() > 1000) return false;
+    for (const QChar& ch : name)
+        if (!ch.isLetterOrNumber() && ch != '_') return false;
     return true;
 }
 
 bool JsonDataLoader::isValidDescription(const QString& desc) {
+    if (desc.length() > 1000) return false;
+    for (const QChar& ch : desc) {
+        if (ch.isLetterOrNumber() || ch == ' ' || ch == '{' || ch == '}' || ch == '-' || ch == ',') continue;
+        return false;
+    }
     return true;
 }
