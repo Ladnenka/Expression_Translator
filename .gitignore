@@ -4,3 +4,4 @@ build/
 deploy/
 run.bat
 run_tests.bat
+run_bat_tests.bat
