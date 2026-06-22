@@ -160,9 +160,64 @@ QString EnglishTranslator::translateUnaryMinus(const QVector<QString>& parts) {
     return "negative of " + parts[0];
 }
 
-QString EnglishTranslator::translateLogicalAnd(const QVector<QString>& parts)                       { return QString(); }
-QString EnglishTranslator::translateLogicalOr(const QVector<QString>& parts)                        { return QString(); }
-QString EnglishTranslator::translateLogicalNot(ExprNode* expr, const QVector<QString>& parts)       { return QString(); }
+QString EnglishTranslator::translateLogicalAnd(const QVector<QString>& parts) {
+    if (parts.size() == 2) return parts[0] + " and " + parts[1];
+
+    QString result = parts[0];
+    for (int i = 1; i < parts.size() - 1; i++)
+        result += ", " + parts[i];
+    result += " and " + parts.last();
+    return result;
+}
+
+QString EnglishTranslator::translateLogicalOr(const QVector<QString>& parts) {
+    if (parts.size() == 2) return parts[0] + " or " + parts[1];
+
+    QString result = parts[0];
+    for (int i = 1; i < parts.size() - 1; i++)
+        result += ", " + parts[i];
+    result += " or " + parts.last();
+    return result;
+}
+
+QString EnglishTranslator::translateLogicalNot(ExprNode* expr,
+                                               const QVector<QString>& parts) {
+    //Взять указатель на узел выражения, которое отрицается
+    ExprNode* child = expr->operands[0];
+
+    //Определить тип узла этого выражения
+    switch (child->type) {
+    //Если выражение является операцией сравнения, равенства или неравенства
+    case ExprNode::LESS:
+    case ExprNode::LESS_EQ:
+    case ExprNode::GREATER:
+    case ExprNode::GREATER_EQ:
+    case ExprNode::EQUAL:
+    case ExprNode::NOT_EQUAL: {
+        //Перевести первый дочерний узел узла выражения и сохранить результат
+        QString left  = translate(child->operands[0]);
+        //Перевести второй дочерний узел узла выражения и сохранить результат
+        QString right = translate(child->operands[1]);
+
+        //В зависимости от типа операции
+        //Сформировать и вернуть соответствующую строку перевода отрицания данной операции
+        switch (child->type) {
+        case ExprNode::LESS:       return left + " is not less than " + right;
+        case ExprNode::LESS_EQ:    return left + " is not less than or equal to " + right;
+        case ExprNode::GREATER:    return left + " is not greater than " + right;
+        case ExprNode::GREATER_EQ: return left + " is not greater than or equal to " + right;
+        case ExprNode::EQUAL:      return left + " does not equal " + right;
+        case ExprNode::NOT_EQUAL:  return left + " equals " + right;
+        default: break;
+        }
+    }
+     //Для любого другого типа выражения
+    default:
+        //Добавить перед переводом выражения строку "not"
+        return "not " + parts[0];
+    }
+}
+
 QString EnglishTranslator::translateLess(const QVector<QString>& parts)                             { return QString(); }
 QString EnglishTranslator::translateGreater(const QVector<QString>& parts)                          { return QString(); }
 QString EnglishTranslator::translateLessEq(const QVector<QString>& parts)                           { return QString(); }
