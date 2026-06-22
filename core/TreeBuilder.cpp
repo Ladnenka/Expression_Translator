@@ -184,6 +184,49 @@ bool TreeBuilder::buildNAryOp(ExprNode::ExprType opType, int position, QList<Err
 bool TreeBuilder::buildFunctionCall(int position,
                                     const AbstractTranslator::TranslateContext::LoadedData& data,
                                     QList<Error>& errors) {
+    //Проверить количество элементов в стеке
+    //Если стек пустой
+    if (stack.isEmpty()) {
+        //Сохранить соответствующую ошибку в массив ошибок
+        errors.append(Error(Error::NotEnoughOperands, "", "", "", -1, position));
+        return false;
+    }
+
+    //Достать из стека последний узел и сохранить его значение как имя функции, после чего удалить узел
+    ExprNode* nameNode = stack.pop();
+    QString funcName = nameNode->varName;
+    delete nameNode;
+
+    //Проверить наличие функции в списке загруженных функций
+    //Если функция не найдена
+    if (!data.functionNames.contains(funcName)) {
+        //Сохранить соответствующую ошибку в массив ошибок
+        errors.append(Error(Error::UnknownFunction, funcName, "", "", -1, position));
+        return false;
+    }
+
+    //Проверить, что количество элементов в стеке соответствует количеству ожидаемых параметров у функции
+    int expectedArgCount = data.functionArgCount.value(funcName, 2);
+    int actualArgCount = stack.size();
+
+    //Если количество полученных(найденных на стеке) параметров меньше ожидаемого количества параметров
+    if (actualArgCount < expectedArgCount) {
+        //Сохранить соответствующую ошибку в массив ошибок
+        QString dataTypeStr = QString::number(expectedArgCount) + "|" + QString::number(actualArgCount);
+        errors.append(Error(Error::InvalidArgumentCount, funcName, dataTypeStr, "", -1, position));
+        return false;
+    }
+
+    //Достать все элементы со стека и сохранить их в список параметров функции
+    QVector<ExprNode*> args;
+    for (int i = 0; i < expectedArgCount; i++) {
+        args.prepend(stack.pop());
+    }
+
+
+    //Создать узел функции и привязать к нему список параметров функции
+    //Запушить созданный узел операции в стек
+    stack.push(new ExprNode(ExprNode::FUNCTION, funcName, args));
     return true;
 }
 

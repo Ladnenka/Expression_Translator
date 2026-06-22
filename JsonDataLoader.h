@@ -14,6 +14,8 @@ public:
                                                                          const QString& funcsPath,
                                                                          QList<Error>& errors);
 
+private:
+
     static bool loadVariables(const QJsonArray& array, const QString& filePath,
                               AbstractTranslator::TranslateContext::LoadedData& data, QList<Error>& errors);
 
