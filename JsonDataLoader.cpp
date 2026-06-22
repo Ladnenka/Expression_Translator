@@ -66,10 +66,107 @@ JsonDataLoader::loadFromJson(const QString& varsPath, const QString& funcsPath, 
 
 bool JsonDataLoader::loadVariables(const QJsonArray& array, const QString& filePath,
                                    AbstractTranslator::TranslateContext::LoadedData& data, QList<Error>& errors) {
+    QSet<QString> alreadyUsedNames;
+
+    for (int i = 0; i < array.size(); i++) {
+        QJsonObject object = array[i].toObject();
+
+        // проверяем name и description
+        if (!checkCommonFields(object, filePath, errors)) return false;
+
+        QString name = object["name"].toString();
+
+        // нет поля type
+        if (!object.contains("type")) {
+            errors.append(Error(Error::MissingRequiredField, "type", "", filePath));
+            return false;
+        }
+
+        QString type = object["type"].toString();
+
+        // неподдерживаемый тип
+        if (!isSupportedType(type)) {
+            errors.append(Error(Error::UnsupportedType, name, type, filePath));
+            return false;
+        }
+
+        // дубликат переменной
+        if (alreadyUsedNames.contains(name)) {
+            errors.append(Error(Error::DuplicateVariable, name, "", filePath));
+            return false;
+        }
+
+        alreadyUsedNames.insert(name);
+        data.variables.append(Variable(name, object["description"].toString(), type));
+    }
+
     return true;
 }
 
 bool JsonDataLoader::loadFunctions(const QJsonArray& array, const QString& filePath,
                                    AbstractTranslator::TranslateContext::LoadedData& data, QList<Error>& errors) {
+    QSet<QString> alreadyUsedSignatures;
+
+    for (int i = 0; i < array.size(); i++) {
+        QJsonObject object = array[i].toObject();
+
+        if (!checkCommonFields(object, filePath, errors)) return false;
+
+        QString name = object["name"].toString();
+
+        if (!object.contains("parameters")) {
+            errors.append(Error(Error::MissingRequiredField, "parameters", "", filePath));
+            return false;
+        }
+
+        QJsonArray parametersArray = object["parameters"].toArray();
+        QStringList paramNames;
+        QStringList paramTypes;
+
+        for (int j = 0; j < parametersArray.size(); j++) {
+            QJsonObject param = parametersArray[j].toObject();
+
+            if (!param.contains("name")) {
+                errors.append(Error(Error::MissingRequiredField, "name", "", filePath));
+                return false;
+            }
+
+            if (!param.contains("type")) {
+                errors.append(Error(Error::MissingRequiredField, "type", "", filePath));
+                return false;
+            }
+
+            QString pName = param["name"].toString();
+            QString pType = param["type"].toString();
+
+            if (!isSupportedType(pType)) {
+                errors.append(Error(Error::UnsupportedType, pType, "", filePath));
+            }
+
+            paramNames.append(pName);
+            paramTypes.append(pType);
+        }
+
+        QString signature = name + "(" + paramTypes.join(",") + ")";
+
+        if (alreadyUsedSignatures.contains(signature)) {
+            errors.append(Error(Error::DuplicateFunction, name, "", filePath));
+            return false;
+        }
+
+        alreadyUsedSignatures.insert(signature);
+        data.functions.append(Function(name, paramNames, object["description"].toString()));
+        data.functionNames.append(name);
+        data.functionArgCount[name] = paramNames.size();
+    }
+
+    return true;
+}
+
+bool JsonDataLoader::isSupportedType(const QString& type) {
+    return false;
+}
+// Проверка общих полей для переменной и функции: name, description
+bool JsonDataLoader::checkCommonFields(const QJsonObject& object, const QString& filePath, QList<Error>& errors) {
     return true;
 }

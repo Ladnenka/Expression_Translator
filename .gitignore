@@ -1,7 +1,8 @@
-build-debug/ 
-*.pro.user 
-build/ 
+build-debug/
+*.pro.user
+build/
 deploy/
 run.bat
 run_tests.bat
 Bat_Testing/
+run_bat_tests.bat

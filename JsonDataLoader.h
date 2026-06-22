@@ -14,6 +14,11 @@ public:
                                                                          const QString& funcsPath,
                                                                          QList<Error>& errors);
 
+private:
+
+    static bool isSupportedType(const QString& type);
+    static bool checkCommonFields(const QJsonObject& object, const QString& filePath, QList<Error>& errors);
+
     static bool loadVariables(const QJsonArray& array, const QString& filePath,
                               AbstractTranslator::TranslateContext::LoadedData& data, QList<Error>& errors);
 
