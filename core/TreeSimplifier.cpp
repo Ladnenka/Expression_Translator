@@ -121,9 +121,81 @@ void TreeSimplifier::simplifyMinus(ExprNode* root) {
     }
 }
 
-void TreeSimplifier::simplifyMultiply(ExprNode* root) { }
+void TreeSimplifier::simplifyMultiply(ExprNode* root) {
+    if (root->type != ExprNode::MULTIPLY) return;
 
-void TreeSimplifier::simplifyDivide(ExprNode* root) {}
+    //Создать список дочерних узлов
+    QVector<ExprNode*> factors;
+
+    //Для каждого узла, что привязан к переданному узлу
+    for (ExprNode* child : root->operands) {
+        //Проверить тип узла
+        //Если узел типа умножение
+        if (child->type == ExprNode::MULTIPLY) {
+            //Добавить все дочерние узлы, что привязаны к узлу типа умножение в список дочерних узлов
+            factors.append(child->operands);
+            //Отвязать узел от входного переданного узла
+            child->operands.clear();
+            delete child;
+        }
+        //Иначе добавить узел в список дочерних узлов
+        else {
+            factors.append(child);
+        }
+    }
+    //Заменить список, привязанных узлов, у переданного узла на новый список дочерних узлов
+    root->operands = factors;
+}
+
+void TreeSimplifier::simplifyDivide(ExprNode* root) {
+    if (root->type != ExprNode::DIVIDE) return;
+    //Проверить количество  узлов, привязанных к переданному узлу
+    //Если количество дочерних-привязанных узлов не равно двум
+    if (root->operands.size() != 2) return;
+
+    //Если тип первого привязанного узла равен делению
+    if (root->operands[0]->type == ExprNode::DIVIDE) {
+        //Взять указатель на первый привязанный к переданному узлу и сохранить как "внутренний узел"
+        ExprNode* inner = root->operands[0];
+        //Создать новый узел типа умножения
+        ExprNode* product = new ExprNode(ExprNode::MULTIPLY);
+        //Привязать к новому узлу умножения второй привязанный к "внутреннему узлу" узел и второй привязанный узел от переданного узла
+        product->operands.append(inner->operands[1]);
+        product->operands.append(root->operands[1]);
+
+        //Вызвать метод упрощения умножения для созданного узла
+        simplifyMultiply(product);
+
+        //Назначить первым привязанным узлом переданного узла первый дочерний узел "внутреннего узла"
+        root->operands[0] = inner->operands[0];
+        //Назначить вторым привязанным узлом переданного узла новый созданный узел умножения
+        root->operands[1] = product;
+
+        inner->operands.clear();
+        delete inner;
+    }
+    //Иначе если тип второго дочернего узла равен делению
+    else if (root->operands[1]->type == ExprNode::DIVIDE) {
+        //Взять указатель на второй привязанный узел к переданному узлу и сохранить его как "внутренний узел"
+        ExprNode* inner = root->operands[1];
+        //Создать новый узел типа умножения
+        ExprNode* product = new ExprNode(ExprNode::MULTIPLY);
+        //Привязать к новому узлу умножения первый привязанный узел от переданного узла и второй привязанный узел от "внутреннего узла"
+        product->operands.append(root->operands[0]);
+        product->operands.append(inner->operands[1]);
+
+        //Вызвать метод упрощения умножения для созданного узла
+        simplifyMultiply(product);
+
+        //Назначить первым привязанным узлом переданного узла новый созданный узел умножения
+        root->operands[0] = product;
+        //Назначить вторым привязанным узлом переданного узла первый узел "внутреннего узла"
+        root->operands[1] = inner->operands[0];
+
+        inner->operands.clear();
+        delete inner;
+    }
+}
 
 void TreeSimplifier::simplifyPointer(ExprNode*& root) {}
 

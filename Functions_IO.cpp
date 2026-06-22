@@ -45,3 +45,9 @@ void saveResultToFile(const QString& text, const QString& filePath) {
         printf("\nResult saved to %s\n", qPrintable(filePath));
     }
 }
+
+void printErrors(const QList<Error>& errors) {
+    for (const Error& err : errors) {
+        printf("%s\n", qPrintable(err.generateErrorMessage()));
+    }
+}
