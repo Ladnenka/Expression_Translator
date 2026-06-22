@@ -58,7 +58,9 @@ QString EnglishTranslator::EnglishTranslateContext::getVarDescription(const QStr
 }
 
 QString EnglishTranslator::EnglishTranslateContext::getVarType(const QString& varName) {
-    return QString();
+    for (const Variable& v : loadedData.variables)
+        if (v.name == varName) return v.type;
+    return "";
 }
 
 bool EnglishTranslator::needParentheses(ExprNode::ExprType parentType,
