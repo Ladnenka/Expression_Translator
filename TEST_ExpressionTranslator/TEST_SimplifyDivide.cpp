@@ -400,23 +400,23 @@ void TEST_SimplifyDivide::Test13_BranchA_RightMultiply() {
     delete root;
 }
 
-//Test 14: Divide(Var(a), Divide(Multiply(Var(b),Var(c)), Var(d)))
-//        → Divide(Multiply(Var(a),Var(b),Var(c)), Var(d))
+//Test 14: Divide(Multiply(Var(a),Var(b)), Divide(Var(c),Var(d)))
+//        → Divide(Multiply(Var(a),Var(b),Var(d)), Var(c))
 void TEST_SimplifyDivide::Test14_BranchB_LeftMultiply() {
     ExprNode* mul = new ExprNode(ExprNode::MULTIPLY);
+    ExprNode* a = new ExprNode(ExprNode::VARIABLE); a->varName = "a";
     ExprNode* b = new ExprNode(ExprNode::VARIABLE); b->varName = "b";
-    ExprNode* c = new ExprNode(ExprNode::VARIABLE); c->varName = "c";
+    mul->operands.append(a);
     mul->operands.append(b);
-    mul->operands.append(c);
 
     ExprNode* inner = new ExprNode(ExprNode::DIVIDE);
+    ExprNode* c = new ExprNode(ExprNode::VARIABLE); c->varName = "c";
     ExprNode* d = new ExprNode(ExprNode::VARIABLE); d->varName = "d";
-    inner->operands.append(mul);
+    inner->operands.append(c);
     inner->operands.append(d);
 
     ExprNode* root = new ExprNode(ExprNode::DIVIDE);
-    ExprNode* a = new ExprNode(ExprNode::VARIABLE); a->varName = "a";
-    root->operands.append(a);
+    root->operands.append(mul);
     root->operands.append(inner);
 
     TreeSimplifier::simplify(root);
@@ -427,9 +427,9 @@ void TEST_SimplifyDivide::Test14_BranchB_LeftMultiply() {
     QCOMPARE(root->operands[0]->operands.size(), 3);
     QCOMPARE(root->operands[0]->operands[0]->varName, QString("a"));
     QCOMPARE(root->operands[0]->operands[1]->varName, QString("b"));
-    QCOMPARE(root->operands[0]->operands[2]->varName, QString("c"));
+    QCOMPARE(root->operands[0]->operands[2]->varName, QString("d"));
     QCOMPARE(root->operands[1]->type, ExprNode::VARIABLE);
-    QCOMPARE(root->operands[1]->varName, QString("d"));
+    QCOMPARE(root->operands[1]->varName, QString("c"));
 
     delete root;
 }

@@ -241,5 +241,13 @@ void TreeSimplifier::simplifyUnaryMinus(ExprNode*& root) {
 }
 
 ExprNode* TreeSimplifier::makeNegative(ExprNode* op) {
-    ExprNode();
+    if (op->type == ExprNode::UNARY_MINUS) {
+        ExprNode* inner = op->operands[0];
+        op->operands.clear();
+        delete op;
+        return inner;
+    }
+    ExprNode* neg = new ExprNode(ExprNode::UNARY_MINUS);
+    neg->operands.append(op);
+    return neg;
 }
