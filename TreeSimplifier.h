@@ -7,6 +7,7 @@ public:
     static void simplify(ExprNode*& root);
 
 private:
+    static ExprNode* makeNegative(ExprNode* op);
 
     static void simplifyPlus(ExprNode* root);
     static void simplifyMinus(ExprNode* root);
