@@ -98,9 +98,50 @@ bool EnglishTranslator::needParentheses(ExprNode::ExprType parentType,
     }
 }
 
-QString EnglishTranslator::translateSum(const QVector<QString>& parts)                              { return QString(); }
+QString EnglishTranslator::translateSum(const QVector<QString>& parts) {
+    //Проверить количество элементов в списке строк
+    //Если список содержит один элемент
+    //Вернуть этот элемент
+    if (parts.size() == 1) return parts[0];
+    //Если размер списка равен двум
+    //Вернуть строку, состоящую из строки "Sum of", первого элемента списка, строки "and" и второго элемента списка
+    if (parts.size() == 2) return "Sum of " + parts[0] + " and " + parts[1];
+
+    //Сохранить в результирующую строку "Sum of" и первый элемент списка строк
+    QString result = "Sum of " + parts[0];
+    //Для каждого элемента в списке строк, начиная со второго и до предпоследнего
+    for (int i = 1; i < parts.size() - 1; i++)
+        //Добавить к результирующей строке запятую с пробелом и текущий элемент списка
+        result += ", " + parts[i];
+    //Добавить к результирующей строке текст " and" и последний элемент списка строк
+    result += " and " + parts.last();
+    //Возвратить полученную строку
+    return result;
+}
+
 QString EnglishTranslator::translateSub(const QVector<QString>& parts)                              { return QString(); }
-QString EnglishTranslator::translateMultiply(const QVector<QString>& parts)                         { return QString(); }
+
+QString EnglishTranslator::translateMultiply(const QVector<QString>& parts) {
+    //Проверить количество элементов в списке строк
+    //Если список содержит один элемент
+    //Вернуть этот элемент
+    if (parts.size() == 1) return parts[0];
+    //Если размер списка равен двум
+    //Вернуть строку, состоящую из строки "Product of", первого элемента списка, строки "and" и второго элемента списка
+    if (parts.size() == 2) return "Product of " + parts[0] + " and " + parts[1];
+
+    //Сохранить в результирующую строку "Product of" и первый элемент списка строк
+    QString result = "Product of " + parts[0];
+    //Для каждого элемента в списке строк, начиная со второго и до предпоследнего
+    for (int i = 1; i < parts.size() - 1; i++)
+        //Добавить к результирующей строке запятую с пробелом и текущий элемент списка
+        result += ", " + parts[i];
+    //Добавить к результирующей строке текст " and" и последний элемент списка строк
+    result += " and " + parts.last();
+    //Возвратить полученную строку
+    return result;
+}
+
 QString EnglishTranslator::translateDivide(const QVector<QString>& parts)                           { return QString(); }
 QString EnglishTranslator::translateModulo(const QVector<QString>& parts)                           { return QString(); }
 QString EnglishTranslator::translatePower(const QVector<QString>& parts)                            { return QString(); }
