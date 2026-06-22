@@ -16,6 +16,8 @@ public:
 
 private:
 
+    static bool isValidName(const QString& name);
+    static bool isValidDescription(const QString& desc);
     static bool isSupportedType(const QString& type);
     static bool checkCommonFields(const QJsonObject& object, const QString& filePath, QList<Error>& errors);
 

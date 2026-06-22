@@ -71,12 +71,12 @@ bool JsonDataLoader::loadVariables(const QJsonArray& array, const QString& fileP
     for (int i = 0; i < array.size(); i++) {
         QJsonObject object = array[i].toObject();
 
-        // проверяем name и description
+        //проверяем name и description
         if (!checkCommonFields(object, filePath, errors)) return false;
 
         QString name = object["name"].toString();
 
-        // нет поля type
+        //нет поля type
         if (!object.contains("type")) {
             errors.append(Error(Error::MissingRequiredField, "type", "", filePath));
             return false;
@@ -84,13 +84,13 @@ bool JsonDataLoader::loadVariables(const QJsonArray& array, const QString& fileP
 
         QString type = object["type"].toString();
 
-        // неподдерживаемый тип
+        //неподдерживаемый тип
         if (!isSupportedType(type)) {
             errors.append(Error(Error::UnsupportedType, name, type, filePath));
             return false;
         }
 
-        // дубликат переменной
+        //дубликат переменной
         if (alreadyUsedNames.contains(name)) {
             errors.append(Error(Error::DuplicateVariable, name, "", filePath));
             return false;
@@ -120,8 +120,7 @@ bool JsonDataLoader::loadFunctions(const QJsonArray& array, const QString& fileP
         }
 
         QJsonArray parametersArray = object["parameters"].toArray();
-        QStringList paramNames;
-        QStringList paramTypes;
+        QStringList paramNames; QStringList paramTypes;
 
         for (int j = 0; j < parametersArray.size(); j++) {
             QJsonObject param = parametersArray[j].toObject();
@@ -136,8 +135,7 @@ bool JsonDataLoader::loadFunctions(const QJsonArray& array, const QString& fileP
                 return false;
             }
 
-            QString pName = param["name"].toString();
-            QString pType = param["type"].toString();
+            QString pName = param["name"].toString(); QString pType = param["type"].toString();
 
             if (!isSupportedType(pType)) {
                 errors.append(Error(Error::UnsupportedType, pType, "", filePath));
@@ -159,14 +157,65 @@ bool JsonDataLoader::loadFunctions(const QJsonArray& array, const QString& fileP
         data.functionNames.append(name);
         data.functionArgCount[name] = paramNames.size();
     }
-
     return true;
 }
 
 bool JsonDataLoader::isSupportedType(const QString& type) {
+    static const QStringList types = {"int", "float", "double", "char", "bool", "short", "unsigned int"};
+    if (types.contains(type)) return true;
+    if (type.endsWith("*") || type.endsWith("[]"))
+        return types.contains(type.left(type.length() - 2).trimmed());
     return false;
 }
+
 // Проверка общих полей для переменной и функции: name, description
 bool JsonDataLoader::checkCommonFields(const QJsonObject& object, const QString& filePath, QList<Error>& errors) {
+    //Если объект не содержит поля "name"
+    if (!object.contains("name")) {
+        //Добавить соответствующую ошибку в массив ошибок и завершить выполнение метода
+        errors.append(Error(Error::MissingRequiredField, "name", "", filePath));
+        return false;
+    }
+
+    //Извлечь значение поля "name" и сохранить как строку имени
+    QString name = object["name"].toString();
+
+    //Если строка имени пустая
+    if (name.isEmpty()) {
+        //Добавить соответствующую ошибку в массив ошибок и завершить выполнение метода
+        errors.append(Error(Error::EmptyVariableName, "", "", filePath));
+        return false;
+    }
+
+    //Если строка имени содержит недопустимые символы
+    if (!isValidName(name)) {
+        //Добавить в список ошибок соответствующую ошибку и завершить выполнение метода
+        errors.append(Error(Error::InvalidCharacters, name, "name", filePath));
+        return false;
+    }
+
+    //Проверить наличие описания у объекта
+    if (!object.contains("description")) {
+        errors.append(Error(Error::MissingRequiredField, "description", "", filePath));
+        return false;
+    }
+
+    //Извлечь значение поля "description" и проверить его на валидность
+    //Если описание содержит недопустимые символы
+    QString description = object["description"].toString();
+    if (!isValidDescription(description)) {
+        //Добавить в список ошибок ошибку соответствующую ошибку и завершить выполнение метода
+        errors.append(Error(Error::InvalidCharacters, name, "description", filePath));
+        return false;
+    }
+    //Вернуть признак пройденных проверок
+    return true;
+}
+
+bool JsonDataLoader::isValidName(const QString& name) {
+    return true;
+}
+
+bool JsonDataLoader::isValidDescription(const QString& desc) {
     return true;
 }
