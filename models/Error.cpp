@@ -36,7 +36,9 @@ QString Error::generateErrorMessage() const {
         return "Variable/function " + id + " contains invalid characters in field " + dataTypeStr + " in file " + errorFilePath + ".";
 
     case MissingArguments:
-        return "Missing required program arguments. Expected: <input.txt>";
+        return errorColumn == 0
+                   ? "Missing required program arguments. Expected: <input.txt> <output.txt>"
+                   : "Missing required program argument. Expected: <output.txt>";
 
     case UnsupportedOperation:
         return "Unsupported operation " + id + " at position " + QString::number(errorLine) + ".";

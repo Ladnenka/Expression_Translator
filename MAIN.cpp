@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     //Если аргументов меньше трёх
     if (argc < 3) {
         //Вывести ошибку об отсутствии минимального количества аргументов
-        errors.append(Error(Error::MissingArguments, "", "", "<input.txt> <output.txt> [vars.json] [funcs.json]"));
+        errors.append(Error(Error::MissingArguments, "", "", "", argc - 1));
         printf("\nCOMPILATION ERRORS FOUND\n");
         printErrors(errors);
         return 1;
