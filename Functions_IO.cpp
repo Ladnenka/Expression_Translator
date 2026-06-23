@@ -17,15 +17,24 @@ bool loadExpressionFromFile(const QString& path, QStringList& expressions, QList
         return false;
     }
 
-    expressions = fullContent.split('\n', Qt::SkipEmptyParts);
+    QStringList allLines = fullContent.split('\n');
+    expressions.clear();
+
+    for (const QString& line : allLines) {
+        QString trimmedLine = line.trimmed();
+        if (!trimmedLine.isEmpty()) {
+            expressions.append(trimmedLine);
+        }
+    }
 
     if (expressions.size() > 10) {
         errors.append(Error(Error::TooManyExpressions, "", "", ""));
+        expressions.clear();
         return false;
     }
 
     for (int i = 0; i < expressions.size(); ++i) {
-        if (expressions[i].trimmed().length() > 1000) {
+        if (expressions[i].length() > 1000) {
             errors.append(Error(Error::ExpressionTooLong, "", "", path));
             expressions.clear();
             return false;
