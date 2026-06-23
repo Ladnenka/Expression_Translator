@@ -57,10 +57,10 @@ ExprNode* TreeBuilder::buildTree(const QStringList& tokens, const QString& origi
         else if (t == "!")   { if (!buildUnaryOp(ExprNode::LOGICAL_NOT, position, errors))   return nullptr; }
         else if (t == "&")   { if (!buildUnaryOp(ExprNode::ADDRESS_OF, position, errors))    return nullptr; }
         else if (t == "[]")  { if (!buildBinaryOp(ExprNode::INDEX, position, errors))        return nullptr; }
-        else if (t == "_++") { if (!stack.isEmpty() && !checkSideEffect(stack.top(), position, errors)) return nullptr; if (!buildUnaryOp(ExprNode::PRE_INC,  position, errors)) return nullptr; }
-        else if (t == "++_") { if (!stack.isEmpty() && !checkSideEffect(stack.top(), position, errors)) return nullptr; if (!buildUnaryOp(ExprNode::POST_INC, position, errors)) return nullptr; }
-        else if (t == "_--") { if (!stack.isEmpty() && !checkSideEffect(stack.top(), position, errors)) return nullptr; if (!buildUnaryOp(ExprNode::PRE_DEC,  position, errors)) return nullptr; }
-        else if (t == "--_") { if (!stack.isEmpty() && !checkSideEffect(stack.top(), position, errors)) return nullptr; if (!buildUnaryOp(ExprNode::POST_DEC, position, errors)) return nullptr; }
+        else if (t == "++_") { if (!stack.isEmpty() && !checkSideEffect(stack.top(), position, errors)) return nullptr; if (!buildUnaryOp(ExprNode::PRE_INC,  position, errors)) return nullptr; }
+        else if (t == "_++") { if (!stack.isEmpty() && !checkSideEffect(stack.top(), position, errors)) return nullptr; if (!buildUnaryOp(ExprNode::POST_INC, position, errors)) return nullptr; }
+        else if (t == "--_") { if (!stack.isEmpty() && !checkSideEffect(stack.top(), position, errors)) return nullptr; if (!buildUnaryOp(ExprNode::PRE_DEC,  position, errors)) return nullptr; }
+        else if (t == "_--") { if (!stack.isEmpty() && !checkSideEffect(stack.top(), position, errors)) return nullptr; if (!buildUnaryOp(ExprNode::POST_DEC, position, errors)) return nullptr; }
         else if (t == "_-")  { if (!buildUnaryOp(ExprNode::UNARY_MINUS, position, errors))   return nullptr; }
         else if (t == "#CALL") { if (!buildFunctionCall(position, data, errors))             return nullptr; }
         //Иначе
