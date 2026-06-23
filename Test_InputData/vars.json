@@ -1,0 +1,52 @@
+[
+    {
+        "name": "x",
+        "type": "int",
+        "description": "pointer to x"
+    },
+    {
+        "name": "zy",
+        "type": "int",
+        "description": "the unknown variable y"
+    },
+    {
+        "name": "z",
+        "type": "int",
+        "description": "the unknown variable z"
+    },
+    {
+        "name": "a",
+        "type": "int[]",
+        "description": "the first coefficient a"
+    },
+    {
+        "name": "b",
+        "type": "double",
+        "description": "the second coefficient b"
+    },
+    {
+        "name": "c",
+        "type": "double",
+        "description": "the third coefficient c"
+    },
+    {
+        "name": "radius",
+        "type": "double",
+        "description": "the radius of the circle"
+    },
+    {
+        "name": "width",
+        "type": "double",
+        "description": "the width of the rectangle"
+    },
+    {
+        "name": "height",
+        "type": "double",
+        "description": "the height of the rectangle"
+    },
+    {
+        "name": "pi",
+        "type": "double",
+        "description": "the mathematical constant pi"
+    }
+]

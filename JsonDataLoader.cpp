@@ -163,7 +163,9 @@ bool JsonDataLoader::loadFunctions(const QJsonArray& array, const QString& fileP
 bool JsonDataLoader::isSupportedType(const QString& type) {
     static const QStringList types = {"int", "float", "double", "char", "bool", "short", "unsigned int"};
     if (types.contains(type)) return true;
-    if (type.endsWith("*") || type.endsWith("[]"))
+    if (type.endsWith("*"))
+        return types.contains(type.left(type.length() - 1).trimmed());
+    if (type.endsWith("[]"))
         return types.contains(type.left(type.length() - 2).trimmed());
     return false;
 }

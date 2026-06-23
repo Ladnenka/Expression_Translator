@@ -1,8 +1,6 @@
-Expression_Translator/build-debug/
-Expression_Translator/*.pro.user
-Expression_Translator/build/
-Expression_Translator/deploy/
-Expression_Translator/run.bat
-Expression_Translator/run_tests.bat
-Expression_Translator/Bat_Testing/
-Expression_Translator/run_bat_tests.bat
+build-debug/
+*.pro.user
+build/
+deploy/
+run.bat
+run_tests.bat

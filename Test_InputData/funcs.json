@@ -1,0 +1,16 @@
+[
+    {
+        "name": "max",
+        "parameters": [
+            {
+                "name": "a",
+                "type": "aaaa"
+            },
+            {
+                "name": "b",
+                "type": "int"
+            }
+        ],
+        "description": "the maximum of {a} and {b}"
+    }
+]
