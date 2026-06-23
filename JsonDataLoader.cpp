@@ -74,6 +74,12 @@ bool JsonDataLoader::loadVariables(const QJsonArray& array, const QString& fileP
         //проверяем name и description
         if (!checkCommonFields(object, filePath, errors)) return false;
 
+        //если объект содержит поле parameters, то это функция, а не переменная
+        if (object.contains("parameters")) {
+            errors.append(Error(Error::MissingRequiredField, "type", "", filePath));
+            return false;
+        }
+
         QString name = object["name"].toString();
 
         //нет поля type
