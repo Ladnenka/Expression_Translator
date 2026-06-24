@@ -230,7 +230,7 @@ bool TreeBuilder::buildFunctionCall(int position,
     return true;
 }
 
-bool TreeBuilder::checkSideEffect(ExprNode* operand, int position, QList<Error>& errors) {
+bool TreeBuilder::checkSideEffect(const ExprNode* operand, int position, QList<Error>& errors) {
     //Проверить переданный указатель на узел верхний узел в стеке
     //Если проверяемый узел не переменная и указатель на узел не пустой, то завершить выполнение метода
     if (!operand || operand->type != ExprNode::VARIABLE) return true;

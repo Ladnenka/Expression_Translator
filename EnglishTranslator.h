@@ -23,7 +23,7 @@ public:
          * \brief Конструктор контекста.
          * \param [in] data Загруженные данные о переменных и функциях
          */
-        EnglishTranslateContext(const TranslateContext::LoadedData& data);
+        explicit EnglishTranslateContext(const TranslateContext::LoadedData& data);
 
         /*!
          * \brief Возвращает тип переменной по её имени.
@@ -52,7 +52,7 @@ public:
      * \brief Конструктор переводчика.
      * \param [in] ctx Указатель на контекст переводчика
      */
-    EnglishTranslator(EnglishTranslateContext* ctx);
+    explicit EnglishTranslator(EnglishTranslateContext* ctx);
 
 private:
     /*!

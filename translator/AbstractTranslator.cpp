@@ -85,4 +85,4 @@ QString AbstractTranslator::translate(ExprNode* expr) {
 
 bool AbstractTranslator::needParentheses(ExprNode::ExprType exprType, ExprNode::ExprType operandType) {return false;}
 
-QString AbstractTranslator::translateNumber(ExprNode* expr) { return expr->value; }
+QString AbstractTranslator::translateNumber(const ExprNode* expr) { return expr->value; }

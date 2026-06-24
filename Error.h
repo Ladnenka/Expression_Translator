@@ -59,7 +59,7 @@ public:
      * \param[in] column Номер столбца
      * \param[in] line Номер строки или позиция в выражении
      */
-    Error(ErrorType t, const QString& identifier = "", const QString& dataType = "",
+    explicit Error(ErrorType t, const QString& identifier = "", const QString& dataType = "",
           const QString& filePath = "", int column = -1, int line = -1);
 
     /*!

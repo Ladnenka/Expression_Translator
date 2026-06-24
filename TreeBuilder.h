@@ -23,7 +23,7 @@ public:
      * \param [in] token Строка токена
      * \return true если токен является числом
      */
-    bool isNumberToken(const QString& token);
+    static bool isNumberToken(const QString& token);
 
     /*!
      * \brief Строит узел бинарной операции из двух верхних элементов стека.
@@ -110,7 +110,7 @@ private:
      * \param [in] errors Список ошибок
      * \return true если конфликта побочных эффектов нет
      */
-    bool checkSideEffect(ExprNode* operand, int position, QList<Error>& errors);
+    bool checkSideEffect(const ExprNode* operand, int position, QList<Error>& errors);
 };
 
 #endif // TREEBUILDER_H

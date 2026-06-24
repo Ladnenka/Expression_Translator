@@ -70,7 +70,7 @@ public:
      * \brief Конструктор с типом узла.
      * \param[in] t Тип узла
      */
-    ExprNode(ExprType t);
+    explicit ExprNode(ExprType t);
 
     /*!
      * \brief Конструктор с типом узла и строковым значением.
@@ -83,13 +83,13 @@ public:
      * \brief Конструктор для числового узла.
      * \param[in] num Числовое значение
      */
-    ExprNode(double num);
+    explicit ExprNode(double num);
 
     /*!
      * \brief Конструктор для узла переменной.
      * \param[in] var Имя переменной
      */
-    ExprNode(const QString& var);
+    explicit ExprNode(const QString& var);
 
     /*!
      * \brief Конструктор для узла вызова функции.

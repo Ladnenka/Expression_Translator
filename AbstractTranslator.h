@@ -109,7 +109,7 @@ protected:
      * \param [in] expr Указатель на узел числа
      * \return Строковое представление числа
      */
-    QString translateNumber(ExprNode* expr);
+    static QString translateNumber(const ExprNode* expr);
 
     virtual QString translateSum(const QVector<QString>& parts) = 0;          ///< Перевод сложения
     virtual QString translateSub(const QVector<QString>& parts) = 0;          ///< Перевод вычитания
@@ -173,6 +173,27 @@ public:
      * \return Строка с переводом узла
      */
     QString translate(ExprNode* expr);
+
+    //ccpcheck recomendation
+    /*!
+     * \brief Запрещённый конструктор копирования
+     *
+     * Копирование объектов переводчика не допускается, поскольку объект
+     * владеет контекстом перевода и внутренним состоянием.
+     *
+     * \param [in] other Объект, который предполагалось скопировать
+     */
+    AbstractTranslator(const AbstractTranslator&) = delete;
+
+    /*!
+     * \brief Запрещённый оператор копирующего присваивания
+     *
+     * Присваивание одного объекта переводчика другому не допускается,
+     * чтобы избежать некорректного копирования внутреннего состояния.
+     *
+     * \param [in] other Объект-источник присваивания
+     */
+    AbstractTranslator& operator=(const AbstractTranslator&) = delete;
 };
 
 #endif // ABSTRACTTRANSLATOR_H
