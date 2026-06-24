@@ -16,9 +16,9 @@
  * Выполняет проверки: файл существует, не пустой, содержит не более 10 выражений,
  * каждое выражение не длиннее 1000 символов.
  *
- * \param path Путь к входному файлу
- * \param expressions Список, в который будут записаны считанные выражения
- * \param errors Список ошибок, в который добавляются обнаруженные ошибки
+ * \param[in] path Путь к входному файлу
+ * \param[out] expressions Список, в который будут записаны считанные выражения
+ * \param[out] errors Список ошибок, в который добавляются обнаруженные ошибки
  * \return true если файл успешно прочитан, false если возникла ошибка
  */
 bool loadExpressionFromFile(const QString& path, QStringList& expressions, QList<Error>& errors);
@@ -29,8 +29,8 @@ bool loadExpressionFromFile(const QString& path, QStringList& expressions, QList
  * Создаёт файл по указанному пути или перезаписывает существующий.
  * Записывает переданный текст в файл в кодировке UTF-8.
  *
- * \param text Текст для записи в файл
- * \param filePath Путь к выходному файлу
+ * \param[in] text Текст для записи в файл
+ * \param[in] filePath Путь к выходному файлу
  */
 void saveResultToFile(const QString& text, const QString& filePath);
 
@@ -39,7 +39,7 @@ void saveResultToFile(const QString& text, const QString& filePath);
  *
  * Для каждой ошибки из списка вызывает generateErrorMessage() и выводит результат через printf.
  *
- * \param errors Список ошибок для вывода
+ * \param[in] errors Список ошибок для вывода
  */
 void printErrors(const QList<Error>& errors);
 

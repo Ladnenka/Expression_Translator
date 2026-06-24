@@ -8,6 +8,11 @@
 #include <QJsonObject>
 
 /*!
+ * \file JsonDataLoader.h
+ * \brief Класс для загрузки данных о переменных и функциях из JSON-файлов.
+ */
+
+/*!
  * \brief Класс для загрузки данных о переменных и функциях из JSON-файлов.
  *
  * Предоставляет статические методы для чтения и валидации JSON-файлов
@@ -21,9 +26,9 @@ public:
      * Читает файлы по указанным путям, проверяет их корректность
      * и возвращает заполненную структуру LoadedData.
      *
-     * \param varsPath Путь к JSON-файлу с переменными (может быть пустым)
-     * \param funcsPath Путь к JSON-файлу с функциями (может быть пустым)
-     * \param errors Список ошибок, в который добавляются обнаруженные ошибки
+     * \param[in] varsPath Путь к JSON-файлу с переменными (может быть пустым)
+     * \param[in] funcsPath Путь к JSON-файлу с функциями (может быть пустым)
+     * \param[out] errors Список ошибок, в который добавляются обнаруженные ошибки
      * \return Структура с загруженными переменными и функциями
      */
     static AbstractTranslator::TranslateContext::LoadedData loadFromJson(const QString& varsPath,
@@ -33,40 +38,40 @@ public:
 private:
     /*!
      * \brief Проверяет корректность имени переменной или функции.
-     * \param name Проверяемое имя
+     * \param[in] name Проверяемое имя
      * \return true если имя корректно (только буквы, цифры, подчёркивание, длина до 1000)
      */
     static bool isValidName(const QString& name);
 
     /*!
      * \brief Проверяет корректность строки описания.
-     * \param desc Проверяемое описание
+     * \param[in] desc Проверяемое описание
      * \return true если описание корректно (допустимые символы, длина до 1000)
      */
     static bool isValidDescription(const QString& desc);
 
     /*!
      * \brief Проверяет, является ли тип данных поддерживаемым.
-     * \param type Строка с типом данных
+     * \param[in] type Строка с типом данных
      * \return true если тип поддерживается
      */
     static bool isSupportedType(const QString& type);
 
     /*!
      * \brief Проверяет наличие и корректность общих полей объекта JSON (name, description).
-     * \param object JSON-объект для проверки
-     * \param filePath Путь к файлу (для сообщений об ошибках)
-     * \param errors Список ошибок
+     * \param[in] object JSON-объект для проверки
+     * \param[in] filePath Путь к файлу (для сообщений об ошибках)
+     * \param[out] errors Список ошибок
      * \return true если все обязательные поля присутствуют и корректны
      */
     static bool checkCommonFields(const QJsonObject& object, const QString& filePath, QList<Error>& errors);
 
     /*!
      * \brief Загружает переменные из JSON-массива в структуру данных.
-     * \param array JSON-массив с описаниями переменных
-     * \param filePath Путь к файлу (для сообщений об ошибках)
-     * \param data Структура, в которую записываются загруженные переменные
-     * \param errors Список ошибок
+     * \param[in] array JSON-массив с описаниями переменных
+     * \param[in] filePath Путь к файлу (для сообщений об ошибках)
+     * \param[out] data Структура, в которую записываются загруженные переменные
+     * \param[out] errors Список ошибок
      * \return true если загрузка прошла успешно
      */
     static bool loadVariables(const QJsonArray& array, const QString& filePath,
@@ -74,10 +79,10 @@ private:
 
     /*!
      * \brief Загружает функции из JSON-массива в структуру данных.
-     * \param array JSON-массив с описаниями функций
-     * \param filePath Путь к файлу (для сообщений об ошибках)
-     * \param data Структура, в которую записываются загруженные функции
-     * \param errors Список ошибок
+     * \param[in] array JSON-массив с описаниями функций
+     * \param[in] filePath Путь к файлу (для сообщений об ошибках)
+     * \param[out] data Структура, в которую записываются загруженные функции
+     * \param[out] errors Список ошибок
      * \return true если загрузка прошла успешно
      */
     static bool loadFunctions(const QJsonArray& array, const QString& filePath,

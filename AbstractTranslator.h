@@ -8,6 +8,11 @@
 #include "ExprNode.h"
 
 /*!
+ * \file AbstractTranslator.h
+ * \brief Абстрактный базовый класс переводчика выражений.
+ */
+
+/*!
  * \brief Абстрактный базовый класс переводчика выражений.
  *
  * Реализует обход дерева выражения и делегирует перевод каждого типа узла
@@ -42,15 +47,15 @@ public:
 
             /*!
              * \brief Конструктор с параметрами.
-             * \param vars Список переменных
-             * \param funcs Список функций
+             * \param[in] vars Список переменных
+             * \param [in] funcs Список функций
              */
             LoadedData(const QList<Variable>& vars, const QList<Function>& funcs);
         };
 
         /*!
          * \brief Конструктор контекста.
-         * \param data Загруженные данные о переменных и функциях
+         * \param [in] data Загруженные данные о переменных и функциях
          */
         TranslateContext(const LoadedData& data) : loadedData(data) {}
 
@@ -61,22 +66,22 @@ public:
 
         /*!
          * \brief Возвращает тип переменной по её имени.
-         * \param varName Имя переменной
+         * \param [in] varName Имя переменной
          * \return Строка с типом переменной
          */
         virtual QString getVarType(const QString& varName) = 0;
 
         /*!
          * \brief Возвращает текстовое описание переменной по её имени.
-         * \param varName Имя переменной
+         * \param [in] varName Имя переменной
          * \return Строка с описанием переменной
          */
         virtual QString getVarDescription(const QString& varName) = 0;
 
         /*!
          * \brief Возвращает текстовое описание вызова функции.
-         * \param funcName Имя функции
-         * \param operands Список узлов-аргументов
+         * \param [in] funcName Имя функции
+         * \param [in] operands Список узлов-аргументов
          * \return Строка с описанием вызова функции
          */
         virtual QString getFuncDescription(const QString& funcName, const QVector<ExprNode*>& operands) = 0;
@@ -93,15 +98,15 @@ protected:
 
     /*!
      * \brief Определяет, нужны ли скобки вокруг операнда.
-     * \param exprType Тип родительского узла
-     * \param operandType Тип дочернего узла
+     * \param [in] exprType Тип родительского узла
+     * \param [in] operandType Тип дочернего узла
      * \return true если скобки необходимы
      */
     virtual bool needParentheses(ExprNode::ExprType exprType, ExprNode::ExprType operandType);
 
     /*!
      * \brief Переводит числовой узел в строку.
-     * \param expr Указатель на узел числа
+     * \param [in] expr Указатель на узел числа
      * \return Строковое представление числа
      */
     QString translateNumber(ExprNode* expr);
@@ -139,7 +144,7 @@ protected:
 public:
     /*!
      * \brief Конструктор переводчика.
-     * \param ctx Указатель на контекст переводчика
+     * \param [in] ctx Указатель на контекст переводчика
      */
     AbstractTranslator(TranslateContext* ctx);
 
@@ -153,7 +158,7 @@ public:
      *
      * Очищает preLines и postLines, вызывает translate(root) и объединяет результат.
      *
-     * \param root Корень дерева выражения
+     * \param [in] root Корень дерева выражения
      * \return Строка с переводом выражения
      */
     QString translateExpression(ExprNode* root);
@@ -164,7 +169,7 @@ public:
      * Обходит дерево в глубину, переводит каждый дочерний узел,
      * при необходимости добавляет скобки и вызывает соответствующий метод перевода.
      *
-     * \param expr Указатель на текущий узел
+     * \param [in] expr Указатель на текущий узел
      * \return Строка с переводом узла
      */
     QString translate(ExprNode* expr);

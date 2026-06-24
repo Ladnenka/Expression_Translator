@@ -3,6 +3,7 @@
 #include "ExprNode.h"
 
 /*!
+ * \file TreeSimplifier.h
  * \brief Класс для упрощения дерева выражения.
  *
  * Предоставляет статические методы для рекурсивного обхода и упрощения
@@ -17,7 +18,7 @@ public:
      * Сначала рекурсивно упрощает все дочерние узлы,
      * затем применяет соответствующее упрощение к текущему узлу.
      *
-     * \param root Ссылка на указатель корневого узла (может быть заменён)
+     * \param [in] root Ссылка на указатель корневого узла (может быть заменён)
      */
     static void simplify(ExprNode*& root);
 
@@ -28,7 +29,7 @@ private:
      * Если операнд уже является унарным минусом — убирает двойное отрицание.
      * Иначе — оборачивает операнд в новый узел UNARY_MINUS.
      *
-     * \param op Узел операнда
+     * \param [in] op Узел операнда
      * \return Новый узел с отрицательным значением
      */
     static ExprNode* makeNegative(ExprNode* op);
@@ -39,7 +40,7 @@ private:
      * Раскрывает вложенные узлы PLUS и MINUS:
      * вложенные плюсы расплющиваются, вычитания преобразуются в сложение с отрицательным операндом.
      *
-     * \param root Узел типа PLUS
+     * \param [in] root Узел типа PLUS
      */
     static void simplifyPlus(ExprNode* root);
 
@@ -49,7 +50,7 @@ private:
      * Обрабатывает случаи когда левый или правый операнд является PLUS или MINUS,
      * преобразуя выражение к более простой форме.
      *
-     * \param root Узел типа MINUS
+     * \param [in] root Узел типа MINUS
      */
     static void simplifyMinus(ExprNode* root);
 
@@ -58,7 +59,7 @@ private:
      *
      * Раскрывает вложенные узлы MULTIPLY, собирая все множители в плоский список.
      *
-     * \param root Узел типа MULTIPLY
+     * \param [in] root Узел типа MULTIPLY
      */
     static void simplifyMultiply(ExprNode* root);
 
@@ -68,7 +69,7 @@ private:
      * Обрабатывает случаи когда левый или правый операнд является DIVIDE,
      * устраняя вложенные деления путём перестановки операндов.
      *
-     * \param root Узел типа DIVIDE
+     * \param [in] root Узел типа DIVIDE
      */
     static void simplifyDivide(ExprNode* root);
 
@@ -77,7 +78,7 @@ private:
      *
      * Устраняет взаимно обратные операции: *(&x) → x и &(*x) → x.
      *
-     * \param root Ссылка на указатель узла типа ADDRESS_OF или DEREFERENCE (может быть заменён)
+     * \param [in] root Ссылка на указатель узла типа ADDRESS_OF или DEREFERENCE (может быть заменён)
      */
     static void simplifyPointer(ExprNode*& root);
 
@@ -86,7 +87,7 @@ private:
      *
      * Устраняет двойное отрицание: -(-x) → x.
      *
-     * \param root Ссылка на указатель узла типа UNARY_MINUS (может быть заменён)
+     * \param [in] root Ссылка на указатель узла типа UNARY_MINUS (может быть заменён)
      */
     static void simplifyUnaryMinus(ExprNode*& root);
 };

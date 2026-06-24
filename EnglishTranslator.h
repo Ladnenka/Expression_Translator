@@ -3,6 +3,7 @@
 #include "AbstractTranslator.h"
 
 /*!
+ * \file EnglishTranslator.h
  * \brief Переводчик выражений на английский язык.
  *
  * Реализует все методы перевода абстрактного переводчика,
@@ -20,28 +21,28 @@ public:
     public:
         /*!
          * \brief Конструктор контекста.
-         * \param data Загруженные данные о переменных и функциях
+         * \param [in] data Загруженные данные о переменных и функциях
          */
         EnglishTranslateContext(const TranslateContext::LoadedData& data);
 
         /*!
          * \brief Возвращает тип переменной по её имени.
-         * \param varName Имя переменной
+         * \param [in] varName Имя переменной
          * \return Строка с типом переменной
          */
         QString getVarType(const QString& varName) override;
 
         /*!
          * \brief Возвращает текстовое описание переменной на английском.
-         * \param varName Имя переменной
+         * \param [in] varName Имя переменной
          * \return Строка с описанием переменной
          */
         QString getVarDescription(const QString& varName) override;
 
         /*!
          * \brief Возвращает текстовое описание вызова функции на английском.
-         * \param funcName Имя функции
-         * \param operands Список узлов-аргументов
+         * \param [in] funcName Имя функции
+         * \param [in] operands Список узлов-аргументов
          * \return Строка с описанием вызова функции
          */
         QString getFuncDescription(const QString& funcName, const QVector<ExprNode*>& operands) override;
@@ -49,15 +50,15 @@ public:
 
     /*!
      * \brief Конструктор переводчика.
-     * \param ctx Указатель на контекст переводчика
+     * \param [in] ctx Указатель на контекст переводчика
      */
     EnglishTranslator(EnglishTranslateContext* ctx);
 
 private:
     /*!
      * \brief Определяет, нужны ли скобки вокруг операнда при переводе.
-     * \param exprType Тип родительского узла
-     * \param operandType Тип дочернего узла
+     * \param [in] exprType Тип родительского узла
+     * \param [in] operandType Тип дочернего узла
      * \return true если скобки необходимы
      */
     bool needParentheses(ExprNode::ExprType exprType, ExprNode::ExprType operandType) override;

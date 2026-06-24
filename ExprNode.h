@@ -4,6 +4,11 @@
 #include <QVector>
 
 /*!
+ * \file ExprNode.h
+ * \brief Узел дерева выражения.
+ */
+
+/*!
  * \brief Узел дерева выражения.
  *
  * Представляет один узел в дереве разбора постфиксного выражения.
@@ -63,34 +68,34 @@ public:
 
     /*!
      * \brief Конструктор с типом узла.
-     * \param t Тип узла
+     * \param[in] t Тип узла
      */
     ExprNode(ExprType t);
 
     /*!
      * \brief Конструктор с типом узла и строковым значением.
-     * \param t Тип узла
-     * \param val Строковое значение (например, числовой литерал)
+     * \param[in] t Тип узла
+     * \param[in] val Строковое значение (например, числовой литерал)
      */
     ExprNode(ExprType t, const QString& val);
 
     /*!
      * \brief Конструктор для числового узла.
-     * \param num Числовое значение
+     * \param[in] num Числовое значение
      */
     ExprNode(double num);
 
     /*!
      * \brief Конструктор для узла переменной.
-     * \param var Имя переменной
+     * \param[in] var Имя переменной
      */
     ExprNode(const QString& var);
 
     /*!
      * \brief Конструктор для узла вызова функции.
-     * \param t Тип узла
-     * \param name Имя функции
-     * \param args Список узлов-аргументов
+     * \param[in] t Тип узла
+     * \param[in] name Имя функции
+     * \param[in] args Список узлов-аргументов
      */
     ExprNode(ExprType t, const QString& name, const QVector<ExprNode*>& args);
 

@@ -7,6 +7,7 @@
 #include "Error.h"
 
 /*!
+ * \file TreeBuilder.h
  * \brief Класс для построения дерева выражения из постфиксной записи.
  *
  * Обрабатывает список токенов постфиксного выражения и строит
@@ -19,7 +20,7 @@ public:
 
     /*!
      * \brief Определяет, является ли токен числом.
-     * \param token Строка токена
+     * \param [in] token Строка токена
      * \return true если токен является числом
      */
     bool isNumberToken(const QString& token);
@@ -29,9 +30,9 @@ public:
      *
      * Извлекает два узла из стека, создаёт узел операции и помещает его обратно.
      *
-     * \param opType Тип операции
-     * \param position Позиция токена в строке выражения
-     * \param errors Список ошибок
+     * \param [in] opType Тип операции
+     * \param [in] position Позиция токена в строке выражения
+     * \param [in] errors Список ошибок
      * \return true если операция выполнена успешно
      */
     bool buildBinaryOp(ExprNode::ExprType opType, int position, QList<Error>& errors);
@@ -41,9 +42,9 @@ public:
      *
      * Извлекает один узел из стека, создаёт узел операции и помещает его обратно.
      *
-     * \param opType Тип операции
-     * \param position Позиция токена в строке выражения
-     * \param errors Список ошибок
+     * \param [in] opType Тип операции
+     * \param [in] position Позиция токена в строке выражения
+     * \param [in] errors Список ошибок
      * \return true если операция выполнена успешно
      */
     bool buildUnaryOp(ExprNode::ExprType opType, int position, QList<Error>& errors);
@@ -54,9 +55,9 @@ public:
      * Извлекает два узла из стека. Если левый или правый узел имеет тот же тип,
      * их дочерние узлы переносятся напрямую (расплющивание дерева).
      *
-     * \param opType Тип операции
-     * \param position Позиция токена в строке выражения
-     * \param errors Список ошибок
+     * \param [in] opType Тип операции
+     * \param [in] position Позиция токена в строке выражения
+     * \param [in] errors Список ошибок
      * \return true если операция выполнена успешно
      */
     bool buildNAryOp(ExprNode::ExprType opType, int position, QList<Error>& errors);
@@ -67,9 +68,9 @@ public:
      * Извлекает имя функции из стека, проверяет её наличие в загруженных данных,
      * извлекает нужное количество аргументов и создаёт узел FUNCTION.
      *
-     * \param position Позиция токена в строке выражения
-     * \param data Загруженные данные о функциях
-     * \param errors Список ошибок
+     * \param [in] position Позиция токена в строке выражения
+     * \param [in] data Загруженные данные о функциях
+     * \param [in] errors Список ошибок
      * \return true если вызов функции построен успешно
      */
     bool buildFunctionCall(int position, const AbstractTranslator::TranslateContext::LoadedData& data, QList<Error>& errors);
@@ -81,10 +82,10 @@ public:
      * операторы извлекают операнды и создают узлы операций.
      * По завершении в стеке должен остаться ровно один узел — корень дерева.
      *
-     * \param tokens Список токенов постфиксного выражения
-     * \param originalExpr Исходная строка выражения (для определения позиций)
-     * \param data Загруженные данные о переменных и функциях
-     * \param errors Список ошибок
+     * \param [in] tokens Список токенов постфиксного выражения
+     * \param [in] originalExpr Исходная строка выражения (для определения позиций)
+     * \param [in] data Загруженные данные о переменных и функциях
+     * \param [in] errors Список ошибок
      * \return Указатель на корневой узел дерева, или nullptr при ошибке
      */
     ExprNode* buildTree(const QStringList& tokens,
@@ -104,9 +105,9 @@ private:
      * Используется при обработке операций с побочным эффектом (инкремент, декремент).
      * Если переменная уже была изменена ранее — добавляет ошибку SideEffectConflict.
      *
-     * \param operand Узел операнда для проверки
-     * \param position Позиция токена в строке выражения
-     * \param errors Список ошибок
+     * \param [in] operand Узел операнда для проверки
+     * \param [in] position Позиция токена в строке выражения
+     * \param [in] errors Список ошибок
      * \return true если конфликта побочных эффектов нет
      */
     bool checkSideEffect(ExprNode* operand, int position, QList<Error>& errors);

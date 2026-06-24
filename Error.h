@@ -3,6 +3,11 @@
 #include <QString>
 
 /*!
+ * \file Error.h
+ * \brief Класс для представления диагностической ошибки.
+ */
+
+/*!
  * \brief Класс для представления ошибки, возникшей при обработке выражения или загрузке данных.
  *
  * Хранит тип ошибки и дополнительную информацию: идентификатор, тип данных,
@@ -47,12 +52,12 @@ public:
 
     /*!
      * \brief Конструктор ошибки.
-     * \param t Тип ошибки
-     * \param identifier Идентификатор (имя переменной, функции и т.д.)
-     * \param dataType Строка с типом данных или доп. информацией
-     * \param filePath Путь к файлу
-     * \param column Номер столбца
-     * \param line Номер строки или позиция в выражении
+     * \param[in] t Тип ошибки
+     * \param[in] identifier Идентификатор (имя переменной, функции и т.д.)
+     * \param[in] dataType Строка с типом данных или доп. информацией
+     * \param[in] filePath Путь к файлу
+     * \param[in] column Номер столбца
+     * \param[in] line Номер строки или позиция в выражении
      */
     Error(ErrorType t, const QString& identifier = "", const QString& dataType = "",
           const QString& filePath = "", int column = -1, int line = -1);
