@@ -33,8 +33,6 @@ public:
         InvalidCharacters,    ///< Недопустимые символы в имени или описании
         DuplicateVariable,    ///< Дублирование имени переменной
         DuplicateFunction,    ///< Дублирование сигнатуры функции
-        NoMatchingOverload,   ///< Не найдена подходящая перегрузка функции
-        AmbiguousOverload,    ///< Неоднозначный вызов перегруженной функции
         ExpressionTooLong,    ///< Выражение превышает допустимую длину
         TooManyOperations,    ///< Слишком много операций в выражении
         EmptyInputFile,       ///< Входной файл пустой

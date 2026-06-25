@@ -58,14 +58,6 @@ QString Error::generateErrorMessage() const {
     case UnknownFunction:
         return "Use of unknown variable or function " + id + " at position " + QString::number(errorLine) + ".";
 
-    case AmbiguousOverload:
-        return "Ambiguous call to overloaded function " + id + " at position " +
-               QString::number(errorLine) + ". Multiple candidates match.";
-
-    case NoMatchingOverload:
-        return "No matching overload for function " + id + " at position " +
-               QString::number(errorLine) + " for the provided arguments.";
-
     case ExtraOperands:
         return "Expression contains extra operands. Stack contains " + dataTypeStr + " values after evaluation.";
 
