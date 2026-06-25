@@ -1,6 +1,8 @@
 #ifndef ENGLISHTRANSLATOR_H
 #define ENGLISHTRANSLATOR_H
 #include "AbstractTranslator.h"
+#include <QSet>
+#include <QMap>
 
 /*!
  * \file EnglishTranslator.h

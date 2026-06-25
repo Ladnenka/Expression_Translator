@@ -1,5 +1,37 @@
 #include "../TreeBuilder.h"
 
+TreeBuilder::TreeBuilder() {
+    tokenTable["+"]   = { ExprNode::PLUS,         NARY       };
+    tokenTable["*"]   = { ExprNode::MULTIPLY,      NARY       };
+    tokenTable["_*"]  = { ExprNode::DEREFERENCE,   UNARY      };
+    tokenTable["&&"]  = { ExprNode::LOGICAL_AND,   NARY       };
+    tokenTable["||"]  = { ExprNode::LOGICAL_OR,    NARY       };
+    tokenTable["-"]   = { ExprNode::MINUS,         BINARY     };
+    tokenTable["/"]   = { ExprNode::DIVIDE,        BINARY     };
+    tokenTable["%"]   = { ExprNode::MODULO,        BINARY     };
+    tokenTable["**"]  = { ExprNode::POWER,         BINARY     };
+    tokenTable["="]   = { ExprNode::ASSIGN,        BINARY     };
+    tokenTable["+="]  = { ExprNode::PLUS_ASSIGN,   BINARY     };
+    tokenTable["-="]  = { ExprNode::MINUS_ASSIGN,  BINARY     };
+    tokenTable["*="]  = { ExprNode::MULT_ASSIGN,   BINARY     };
+    tokenTable["/="]  = { ExprNode::DIV_ASSIGN,    BINARY     };
+    tokenTable["%="]  = { ExprNode::MOD_ASSIGN,    BINARY     };
+    tokenTable[">"]   = { ExprNode::GREATER,       BINARY     };
+    tokenTable["<"]   = { ExprNode::LESS,          BINARY     };
+    tokenTable[">="]  = { ExprNode::GREATER_EQ,    BINARY     };
+    tokenTable["<="]  = { ExprNode::LESS_EQ,       BINARY     };
+    tokenTable["=="]  = { ExprNode::EQUAL,         BINARY     };
+    tokenTable["!="]  = { ExprNode::NOT_EQUAL,     BINARY     };
+    tokenTable["!"]   = { ExprNode::LOGICAL_NOT,   UNARY      };
+    tokenTable["&"]   = { ExprNode::ADDRESS_OF,    UNARY      };
+    tokenTable["[]"]  = { ExprNode::INDEX,         BINARY     };
+    tokenTable["++_"] = { ExprNode::PRE_INC,       UNARY_SIDE };
+    tokenTable["_++"] = { ExprNode::POST_INC,      UNARY_SIDE };
+    tokenTable["--_"] = { ExprNode::PRE_DEC,       UNARY_SIDE };
+    tokenTable["_--"] = { ExprNode::POST_DEC,      UNARY_SIDE };
+    tokenTable["_-"]  = { ExprNode::UNARY_MINUS,   UNARY      };
+}
+
 ExprNode* TreeBuilder::buildTree(const QStringList& tokens, const QString& originalExpr,
                                  const AbstractTranslator::TranslateContext::LoadedData& data,
                                  QList<Error>& errors) {
@@ -19,7 +51,6 @@ ExprNode* TreeBuilder::buildTree(const QStringList& tokens, const QString& origi
         int position = searchFromIndex + 1;
         searchFromIndex += t.length();
 
-        //Проверить тип токена
         //Если токен является числом
         //Создать узел числа, положить его в стек и завершить итерацию цикла
         if (isNumberToken(t)) { stack.push(new ExprNode(ExprNode::NUMBER, t)); continue; }
@@ -32,39 +63,33 @@ ExprNode* TreeBuilder::buildTree(const QStringList& tokens, const QString& origi
             return nullptr;
         }
 
-        //Если токен является операцией
-        //Создать соответствующий узел операции
-        if (t == "+")        { buildNAryOp(ExprNode::PLUS, position, errors); }
-        else if (t == "*")   { buildNAryOp(ExprNode::MULTIPLY, position, errors); }
-        else if (t == "_*")  { buildUnaryOp(ExprNode::DEREFERENCE, position, errors); }
-        else if (t == "&&")  { buildNAryOp(ExprNode::LOGICAL_AND, position, errors); }
-        else if (t == "||")  { buildNAryOp(ExprNode::LOGICAL_OR, position, errors); }
-        else if (t == "-")   { buildBinaryOp(ExprNode::MINUS, position, errors); }
-        else if (t == "/")   { buildBinaryOp(ExprNode::DIVIDE, position, errors); }
-        else if (t == "%")   { buildBinaryOp(ExprNode::MODULO, position, errors); }
-        else if (t == "**")  { buildBinaryOp(ExprNode::POWER, position, errors); }
-        else if (t == "=")   { buildBinaryOp(ExprNode::ASSIGN, position, errors); }
-        else if (t == "+=")  { buildBinaryOp(ExprNode::PLUS_ASSIGN, position, errors); }
-        else if (t == "-=")  { buildBinaryOp(ExprNode::MINUS_ASSIGN, position, errors); }
-        else if (t == "*=")  { buildBinaryOp(ExprNode::MULT_ASSIGN, position, errors); }
-        else if (t == "/=")  { buildBinaryOp(ExprNode::DIV_ASSIGN, position, errors); }
-        else if (t == "%=")  { buildBinaryOp(ExprNode::MOD_ASSIGN, position, errors); }
-        else if (t == ">")   { buildBinaryOp(ExprNode::GREATER, position, errors); }
-        else if (t == "<")   { buildBinaryOp(ExprNode::LESS, position, errors); }
-        else if (t == ">=")  { buildBinaryOp(ExprNode::GREATER_EQ, position, errors); }
-        else if (t == "<=")  { buildBinaryOp(ExprNode::LESS_EQ, position, errors); }
-        else if (t == "==")  { buildBinaryOp(ExprNode::EQUAL, position, errors); }
-        else if (t == "!=")  { buildBinaryOp(ExprNode::NOT_EQUAL, position, errors); }
-        else if (t == "!")   { buildUnaryOp(ExprNode::LOGICAL_NOT, position, errors); }
-        else if (t == "&")   { buildUnaryOp(ExprNode::ADDRESS_OF, position, errors); }
-        else if (t == "[]")  { buildBinaryOp(ExprNode::INDEX, position, errors); }
-        else if (t == "++_") { checkSideEffect(stack.isEmpty() ? nullptr : stack.top(), position, errors); buildUnaryOp(ExprNode::PRE_INC,  position, errors); }
-        else if (t == "_++") { checkSideEffect(stack.isEmpty() ? nullptr : stack.top(), position, errors); buildUnaryOp(ExprNode::POST_INC, position, errors); }
-        else if (t == "--_") { checkSideEffect(stack.isEmpty() ? nullptr : stack.top(), position, errors); buildUnaryOp(ExprNode::PRE_DEC,  position, errors); }
-        else if (t == "_--") { checkSideEffect(stack.isEmpty() ? nullptr : stack.top(), position, errors); buildUnaryOp(ExprNode::POST_DEC, position, errors); }
-        else if (t == "_-")  { buildUnaryOp(ExprNode::UNARY_MINUS, position, errors); }
-        else if (t == "#CALL") { buildFunctionCall(position, data, errors); }
-        //Иначе
+        //Найти токен в таблице диспетчеризации
+        auto it = tokenTable.find(t);
+        if (it != tokenTable.end()) {
+            ExprNode::ExprType nodeType = it.value().first;
+            OpKind kind                 = it.value().second;
+
+            switch (kind) {
+            case NARY:
+                buildNAryOp(nodeType, position, errors);
+                break;
+            case BINARY:
+                buildBinaryOp(nodeType, position, errors);
+                break;
+            case UNARY_SIDE:
+                checkSideEffect(stack.isEmpty() ? nullptr : stack.top(), position, errors);
+                buildUnaryOp(nodeType, position, errors);
+                break;
+            case UNARY:
+                buildUnaryOp(nodeType, position, errors);
+                break;
+            }
+        }
+        //Если токен является вызовом функции
+        else if (t == "#CALL") {
+            buildFunctionCall(position, data, errors);
+        }
+        //Иначе: токен — переменная или неизвестная операция
         else {
             operationCount--;
             //Проверить валидность токена и создать узел переменной
@@ -72,19 +97,15 @@ ExprNode* TreeBuilder::buildTree(const QStringList& tokens, const QString& origi
         }
     }
 
-    //Если в стеке ровно один элемент и ошибок нет
-    if (stack.size() == 1)
-        //Извлечь и вернуть верхний элемент стека как корень дерева
-        return stack.pop();
-
     //Если в стеке больше одного элемента
     if (stack.size() > 1)
         //Сохранить соответствующую ошибку в массив ошибок
-        errors.append(Error(Error::ExtraOperands, "",
-                            QString::number(stack.size()), "", -1, -1));
+        errors.append(Error(Error::ExtraOperands, "", QString::number(stack.size()), "", -1, -1));
 
+    //Если в стеке ровно один элемент — извлечь и вернуть верхний элемент стека как корень дерева
+    ExprNode* result = stack.size() == 1 ? stack.pop() : nullptr;
     while (!stack.isEmpty()) delete stack.pop();
-    return nullptr;
+    return result;
 }
 
 TreeBuilder::~TreeBuilder() {
@@ -97,12 +118,28 @@ bool TreeBuilder::isNumberToken(const QString& token) {
     return ok;
 }
 
+void TreeBuilder::buildVariable(const QString& t, int position, QList<Error>& errors) {
+    for (const QChar& c : t) {
+        //Если токен не валидный
+        if (!c.isLetterOrNumber() && c != '_') {
+            //Сохранить соответствующую ошибку в массив ошибок
+            errors.append(Error(Error::UnsupportedOperation, t, "", "", -1, position));
+            stack.push(ExprNode::makeErrorNode());
+            return;
+        }
+    }
+    //Создать узел переменной и положить его в стек
+    ExprNode* v = new ExprNode(ExprNode::VARIABLE);
+    v->varName = t;
+    stack.push(v);
+}
+
 bool TreeBuilder::buildBinaryOp(ExprNode::ExprType opType, int position, QList<Error>& errors) {
     //Проверить количество элементов в стеке
     //Если элементов стека меньше двух
     if (stack.size() < 2) {
         //Сохранить соответствующую ошибку в массив ошибок
-        errors.append(Error(Error::NotEnoughOperands, "", QString::number(stack.size()) , "", -1, position));
+        errors.append(Error(Error::NotEnoughOperands, "", QString::number(stack.size()), "", -1, position));
         while (stack.size() < 2)
             stack.push(ExprNode::makeErrorNode());
     }
@@ -124,7 +161,7 @@ bool TreeBuilder::buildUnaryOp(ExprNode::ExprType opType, int position, QList<Er
     //Если стек пустой
     if (stack.isEmpty()) {
         //Сохранить соответствующую ошибку в массив ошибок
-        errors.append(Error(Error::NotEnoughOperands, "", QString::number(stack.size()) , "", -1, position));
+        errors.append(Error(Error::NotEnoughOperands, "", QString::number(stack.size()), "", -1, position));
         stack.push(ExprNode::makeErrorNode());
     }
     //Достать из стека последний элемент и сохранить его
@@ -166,28 +203,13 @@ bool TreeBuilder::buildNAryOp(ExprNode::ExprType opType, int position, QList<Err
     if (right->type == opType) {
         for (ExprNode* op : right->operands) node->operands.append(op);
         right->operands.clear(); delete right;
-    } //Иначе
+    }
+    //Иначе
     //Привязать правый дочерний узел к созданному узлу
     else node->operands.append(right);
     //Запушить созданный узел операции в стек
     stack.push(node);
     return true;
-}
-
-void TreeBuilder::buildVariable(const QString& t, int position, QList<Error>& errors) {
-    for (const QChar& c : t) {
-        //Если токен не валидный
-        if (!c.isLetterOrNumber() && c != '_') {
-            //Сохранить соответствующую ошибку в массив ошибок
-            errors.append(Error(Error::UnsupportedOperation, t, "", "", -1, position));
-            stack.push(ExprNode::makeErrorNode());
-            return;
-        }
-    }
-    //Создать узел переменной и положить его в стек
-    ExprNode* v = new ExprNode(ExprNode::VARIABLE);
-    v->varName = t;
-    stack.push(v);
 }
 
 bool TreeBuilder::buildFunctionCall(int position,
@@ -258,4 +280,3 @@ bool TreeBuilder::checkSideEffect(const ExprNode* operand, int position, QList<E
     modifiedVariables.insert(varName);
     return true;
 }
-

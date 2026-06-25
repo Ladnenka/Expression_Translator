@@ -97,6 +97,21 @@ protected:
     QStringList postLines;     ///< Строки, добавляемые после результата перевода
 
     /*!
+     * \brief Таблица диспетчеризации перевода операторов.
+     *
+     * Сопоставляет тип узла с указателем на соответствующий метод перевода.
+     * Покрывает все операторы, кроме NUMBER, VARIABLE, FUNCTION, LOGICAL_NOT и DEREFERENCE.
+     */
+    QHash<ExprNode::ExprType, QString(AbstractTranslator::*)(const QVector<QString>&)> translateTable;
+
+    /*!
+     * \brief Инициализирует таблицу диспетчеризации перевода.
+     *
+     * Вызывается из конструктора конкретного переводчика после инициализации всех виртуальных методов.
+     */
+    void initTranslateTable();
+
+    /*!
      * \brief Определяет, нужны ли скобки вокруг операнда.
      * \param [in] exprType Тип родительского узла
      * \param [in] operandType Тип дочернего узла

@@ -4,7 +4,8 @@ EnglishTranslator::EnglishTranslateContext::EnglishTranslateContext(const Abstra
     : TranslateContext(data) {}
 
 EnglishTranslator::EnglishTranslator(EnglishTranslateContext* ctx)
-    : AbstractTranslator(ctx) {}
+    : AbstractTranslator(ctx) {
+    initTranslateTable(); }
 
 QString EnglishTranslator::EnglishTranslateContext::getFuncDescription(const QString& funcName, const QVector<ExprNode*>& operands) {
     //Для каждой функции из списка функций в структуре загруженных данных
@@ -65,43 +66,17 @@ QString EnglishTranslator::EnglishTranslateContext::getVarType(const QString& va
 
 bool EnglishTranslator::needParentheses(ExprNode::ExprType parentType,
                                         ExprNode::ExprType operandType) {
-    switch (parentType) {
-    case ExprNode::DIVIDE:
-        return operandType == ExprNode::PLUS     ||
-               operandType == ExprNode::MINUS    ||
-               operandType == ExprNode::MULTIPLY ||
-               operandType == ExprNode::DIVIDE   ||
-               operandType == ExprNode::FUNCTION;
+    static const QMap<ExprNode::ExprType, QSet<ExprNode::ExprType>> rules = {
+                                                                             { ExprNode::DIVIDE,      { ExprNode::PLUS, ExprNode::MINUS, ExprNode::MULTIPLY, ExprNode::DIVIDE,   ExprNode::FUNCTION } },
+                                                                             { ExprNode::MULTIPLY,    { ExprNode::PLUS, ExprNode::MINUS, ExprNode::DIVIDE,   ExprNode::FUNCTION                    } },
+                                                                             { ExprNode::PLUS,        { ExprNode::MINUS,                 ExprNode::MULTIPLY, ExprNode::DIVIDE,   ExprNode::FUNCTION } },
+                                                                             { ExprNode::MINUS,       { ExprNode::PLUS, ExprNode::MINUS, ExprNode::MULTIPLY, ExprNode::DIVIDE,   ExprNode::FUNCTION } },
+                                                                             { ExprNode::UNARY_MINUS, { ExprNode::PLUS, ExprNode::MINUS, ExprNode::MULTIPLY, ExprNode::DIVIDE,   ExprNode::FUNCTION } },
+                                                                             };
 
-    case ExprNode::MULTIPLY:
-        return operandType == ExprNode::PLUS  ||
-               operandType == ExprNode::MINUS ||
-               operandType == ExprNode::FUNCTION ||
-               operandType == ExprNode::DIVIDE;
-
-    case ExprNode::PLUS:
-        return operandType == ExprNode::MINUS    ||
-               operandType == ExprNode::MULTIPLY ||
-               operandType == ExprNode::DIVIDE   ||
-               operandType == ExprNode::FUNCTION;
-
-    case ExprNode::MINUS:
-        return operandType == ExprNode::PLUS     ||
-               operandType == ExprNode::MINUS    ||
-               operandType == ExprNode::MULTIPLY ||
-               operandType == ExprNode::DIVIDE   ||
-               operandType == ExprNode::FUNCTION;
-
-    case ExprNode::UNARY_MINUS:
-        return operandType == ExprNode::PLUS     ||
-               operandType == ExprNode::MINUS    ||
-               operandType == ExprNode::MULTIPLY ||
-               operandType == ExprNode::DIVIDE   ||
-               operandType == ExprNode::FUNCTION;
-
-    default:
-        return false;
-    }
+    auto it = rules.find(parentType);
+    if (it == rules.end()) return false;
+    return it.value().contains(operandType);
 }
 
 QString EnglishTranslator::translateSum(const QVector<QString>& parts) {
@@ -217,7 +192,7 @@ QString EnglishTranslator::translateLogicalNot(ExprNode* expr,
         default: break;
         }
     }
-     //Для любого другого типа выражения
+        //Для любого другого типа выражения
     default:
         //Добавить перед переводом выражения строку "not"
         return "not " + parts[0];
