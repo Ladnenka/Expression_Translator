@@ -67,24 +67,8 @@ ExprNode* TreeBuilder::buildTree(const QStringList& tokens, const QString& origi
         //Иначе
         else {
             operationCount--;
-            //Проверить валидность токена
-            bool valid = true;
-            for (const QChar& c : t) {
-                //Если токен не валидный
-                if (!c.isLetterOrNumber() && c != '_') {
-                    //Сохранить соответствующую ошибку в массив ошибок
-                    errors.append(Error(Error::UnsupportedOperation, t, "", "", -1, position));
-                    valid = false;
-                    break;
-                }
-            }
-            if (valid) {
-                //Создать узел переменной и положить его в стек
-                ExprNode* v = new ExprNode(ExprNode::VARIABLE); v->varName = t;
-                stack.push(v);
-            } else {
-                stack.push(ExprNode::makeErrorNode());
-            }
+            //Проверить валидность токена и создать узел переменной
+            buildVariable(t, position, errors);
         }
     }
 
@@ -188,6 +172,22 @@ bool TreeBuilder::buildNAryOp(ExprNode::ExprType opType, int position, QList<Err
     //Запушить созданный узел операции в стек
     stack.push(node);
     return true;
+}
+
+void TreeBuilder::buildVariable(const QString& t, int position, QList<Error>& errors) {
+    for (const QChar& c : t) {
+        //Если токен не валидный
+        if (!c.isLetterOrNumber() && c != '_') {
+            //Сохранить соответствующую ошибку в массив ошибок
+            errors.append(Error(Error::UnsupportedOperation, t, "", "", -1, position));
+            stack.push(ExprNode::makeErrorNode());
+            return;
+        }
+    }
+    //Создать узел переменной и положить его в стек
+    ExprNode* v = new ExprNode(ExprNode::VARIABLE);
+    v->varName = t;
+    stack.push(v);
 }
 
 bool TreeBuilder::buildFunctionCall(int position,

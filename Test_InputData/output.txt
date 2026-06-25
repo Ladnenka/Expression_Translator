@@ -3,7 +3,7 @@ Expression lacks operations on operands to complete successfully. 0 operand/s le
 Variable v is modified more than once in expression at position 19. Operations with side effect are not supported.
 Expression contains extra operands. Stack contains 5 values after evaluation.
 
-Difference between the second coefficient b and (Sum of the first coefficient a and d)
+Difference between b and (Sum of a and d)
 
 [ERROR IN LINE 3:] 
 Expression lacks operations on operands to complete successfully. 1 operand/s left unprocessed.
