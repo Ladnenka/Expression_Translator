@@ -1,1 +1,14 @@
-Sum of a, b and c
+[ERROR IN LINE 1:] 
+Expression lacks operations on operands to complete successfully. 0 operands left unprocessed.
+Variable v is modified more than once in expression at position 19. Operations with side effect are not supported.
+Expression contains extra operands. Stack contains 5 values after evaluation.
+
+Difference between b and (Sum of a and d)
+
+[ERROR IN LINE 3:] 
+Expression lacks operations on operands to complete successfully. 1 operands left unprocessed.
+Expression contains extra operands. Stack contains 2 values after evaluation.
+
+[ERROR IN LINE 4:] 
+Unsupported operation -__ at position 9.
+Expression contains extra operands. Stack contains 2 values after evaluation.

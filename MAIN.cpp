@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
                 printf("   %s\n", qPrintable(msg));
                 lineErrorMessages.append(msg);
             }
-            totalResults.append(QString("[ERROR IN LINE %1: %2]").arg(i + 1).arg(lineErrorMessages.join("; ")));
+            totalResults.append(QString("[ERROR IN LINE %1:] \n%2").arg(i + 1).arg(lineErrorMessages.join("\n")));
             //Завершить итерацию цикла
             if (root) delete root;
             globalError = true;

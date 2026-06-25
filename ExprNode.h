@@ -52,7 +52,8 @@ public:
         POST_DEC,     ///< Постфиксный декремент
         ADDRESS_OF,   ///< Взятие адреса
         DEREFERENCE,  ///< Разыменование указателя
-        INDEX         ///< Индексация массива
+        INDEX,        ///< Индексация массива
+        ERROR_NODE    ///< Фиктивный узел-заглушка, подставляется вместо отсутствующего операнда
     };
 
     ExprType type;              ///< Тип узла
@@ -98,6 +99,12 @@ public:
      * \param[in] args Список узлов-аргументов
      */
     ExprNode(ExprType t, const QString& name, const QVector<ExprNode*>& args);
+
+    /*!
+     * \brief Создаёт фиктивный узел-заглушку типа ERROR_NODE со значением "?".
+     * \return Указатель на новый узел ERROR_NODE
+     */
+    static ExprNode* makeErrorNode();
 
     /*!
      * \brief Деструктор. Рекурсивно удаляет все дочерние узлы.

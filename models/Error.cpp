@@ -69,7 +69,7 @@ QString Error::generateErrorMessage() const {
 
     case NotEnoughOperands:
         return "Expression lacks operations on operands to complete successfully. " +
-               dataTypeStr + " operands left unprocessed.";
+               dataTypeStr + " operand/s left unprocessed.";
 
     case SideEffectConflict:
         return "Variable " + id + " is modified more than once in expression at position " +

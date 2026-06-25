@@ -28,61 +28,68 @@ ExprNode* TreeBuilder::buildTree(const QStringList& tokens, const QString& origi
         if (++operationCount > 100) {
             //Сохранить соответствующую ошибку в массив ошибок
             errors.append(Error(Error::TooManyOperations, "", "", "", -1, -1));
+            while (!stack.isEmpty()) delete stack.pop();
             return nullptr;
         }
 
         //Если токен является операцией
         //Создать соответствующий узел операции
-        if (t == "+")        { if (!buildNAryOp(ExprNode::PLUS, position, errors))           return nullptr; }
-        else if (t == "*")   { if (!buildNAryOp(ExprNode::MULTIPLY, position, errors))       return nullptr; }
-        else if (t == "_*")  { if (!buildUnaryOp(ExprNode::DEREFERENCE, position, errors))   return nullptr; }
-        else if (t == "&&")  { if (!buildNAryOp(ExprNode::LOGICAL_AND, position, errors))    return nullptr; }
-        else if (t == "||")  { if (!buildNAryOp(ExprNode::LOGICAL_OR, position, errors))     return nullptr; }
-        else if (t == "-")   { if (!buildBinaryOp(ExprNode::MINUS, position, errors))        return nullptr; }
-        else if (t == "/")   { if (!buildBinaryOp(ExprNode::DIVIDE, position, errors))       return nullptr; }
-        else if (t == "%")   { if (!buildBinaryOp(ExprNode::MODULO, position, errors))       return nullptr; }
-        else if (t == "**")  { if (!buildBinaryOp(ExprNode::POWER, position, errors))        return nullptr; }
-        else if (t == "=")   { if (!buildBinaryOp(ExprNode::ASSIGN, position, errors))       return nullptr; }
-        else if (t == "+=")  { if (!buildBinaryOp(ExprNode::PLUS_ASSIGN, position, errors))  return nullptr; }
-        else if (t == "-=")  { if (!buildBinaryOp(ExprNode::MINUS_ASSIGN, position, errors)) return nullptr; }
-        else if (t == "*=")  { if (!buildBinaryOp(ExprNode::MULT_ASSIGN, position, errors))  return nullptr; }
-        else if (t == "/=")  { if (!buildBinaryOp(ExprNode::DIV_ASSIGN, position, errors))   return nullptr; }
-        else if (t == "%=")  { if (!buildBinaryOp(ExprNode::MOD_ASSIGN, position, errors))   return nullptr; }
-        else if (t == ">")   { if (!buildBinaryOp(ExprNode::GREATER, position, errors))      return nullptr; }
-        else if (t == "<")   { if (!buildBinaryOp(ExprNode::LESS, position, errors))         return nullptr; }
-        else if (t == ">=")  { if (!buildBinaryOp(ExprNode::GREATER_EQ, position, errors))   return nullptr; }
-        else if (t == "<=")  { if (!buildBinaryOp(ExprNode::LESS_EQ, position, errors))      return nullptr; }
-        else if (t == "==")  { if (!buildBinaryOp(ExprNode::EQUAL, position, errors))        return nullptr; }
-        else if (t == "!=")  { if (!buildBinaryOp(ExprNode::NOT_EQUAL, position, errors))    return nullptr; }
-        else if (t == "!")   { if (!buildUnaryOp(ExprNode::LOGICAL_NOT, position, errors))   return nullptr; }
-        else if (t == "&")   { if (!buildUnaryOp(ExprNode::ADDRESS_OF, position, errors))    return nullptr; }
-        else if (t == "[]")  { if (!buildBinaryOp(ExprNode::INDEX, position, errors))        return nullptr; }
-        else if (t == "++_") { if (!stack.isEmpty() && !checkSideEffect(stack.top(), position, errors)) return nullptr; if (!buildUnaryOp(ExprNode::PRE_INC,  position, errors)) return nullptr; }
-        else if (t == "_++") { if (!stack.isEmpty() && !checkSideEffect(stack.top(), position, errors)) return nullptr; if (!buildUnaryOp(ExprNode::POST_INC, position, errors)) return nullptr; }
-        else if (t == "--_") { if (!stack.isEmpty() && !checkSideEffect(stack.top(), position, errors)) return nullptr; if (!buildUnaryOp(ExprNode::PRE_DEC,  position, errors)) return nullptr; }
-        else if (t == "_--") { if (!stack.isEmpty() && !checkSideEffect(stack.top(), position, errors)) return nullptr; if (!buildUnaryOp(ExprNode::POST_DEC, position, errors)) return nullptr; }
-        else if (t == "_-")  { if (!buildUnaryOp(ExprNode::UNARY_MINUS, position, errors))   return nullptr; }
-        else if (t == "#CALL") { if (!buildFunctionCall(position, data, errors))             return nullptr; }
+        if (t == "+")        { buildNAryOp(ExprNode::PLUS, position, errors); }
+        else if (t == "*")   { buildNAryOp(ExprNode::MULTIPLY, position, errors); }
+        else if (t == "_*")  { buildUnaryOp(ExprNode::DEREFERENCE, position, errors); }
+        else if (t == "&&")  { buildNAryOp(ExprNode::LOGICAL_AND, position, errors); }
+        else if (t == "||")  { buildNAryOp(ExprNode::LOGICAL_OR, position, errors); }
+        else if (t == "-")   { buildBinaryOp(ExprNode::MINUS, position, errors); }
+        else if (t == "/")   { buildBinaryOp(ExprNode::DIVIDE, position, errors); }
+        else if (t == "%")   { buildBinaryOp(ExprNode::MODULO, position, errors); }
+        else if (t == "**")  { buildBinaryOp(ExprNode::POWER, position, errors); }
+        else if (t == "=")   { buildBinaryOp(ExprNode::ASSIGN, position, errors); }
+        else if (t == "+=")  { buildBinaryOp(ExprNode::PLUS_ASSIGN, position, errors); }
+        else if (t == "-=")  { buildBinaryOp(ExprNode::MINUS_ASSIGN, position, errors); }
+        else if (t == "*=")  { buildBinaryOp(ExprNode::MULT_ASSIGN, position, errors); }
+        else if (t == "/=")  { buildBinaryOp(ExprNode::DIV_ASSIGN, position, errors); }
+        else if (t == "%=")  { buildBinaryOp(ExprNode::MOD_ASSIGN, position, errors); }
+        else if (t == ">")   { buildBinaryOp(ExprNode::GREATER, position, errors); }
+        else if (t == "<")   { buildBinaryOp(ExprNode::LESS, position, errors); }
+        else if (t == ">=")  { buildBinaryOp(ExprNode::GREATER_EQ, position, errors); }
+        else if (t == "<=")  { buildBinaryOp(ExprNode::LESS_EQ, position, errors); }
+        else if (t == "==")  { buildBinaryOp(ExprNode::EQUAL, position, errors); }
+        else if (t == "!=")  { buildBinaryOp(ExprNode::NOT_EQUAL, position, errors); }
+        else if (t == "!")   { buildUnaryOp(ExprNode::LOGICAL_NOT, position, errors); }
+        else if (t == "&")   { buildUnaryOp(ExprNode::ADDRESS_OF, position, errors); }
+        else if (t == "[]")  { buildBinaryOp(ExprNode::INDEX, position, errors); }
+        else if (t == "++_") { checkSideEffect(stack.isEmpty() ? nullptr : stack.top(), position, errors); buildUnaryOp(ExprNode::PRE_INC,  position, errors); }
+        else if (t == "_++") { checkSideEffect(stack.isEmpty() ? nullptr : stack.top(), position, errors); buildUnaryOp(ExprNode::POST_INC, position, errors); }
+        else if (t == "--_") { checkSideEffect(stack.isEmpty() ? nullptr : stack.top(), position, errors); buildUnaryOp(ExprNode::PRE_DEC,  position, errors); }
+        else if (t == "_--") { checkSideEffect(stack.isEmpty() ? nullptr : stack.top(), position, errors); buildUnaryOp(ExprNode::POST_DEC, position, errors); }
+        else if (t == "_-")  { buildUnaryOp(ExprNode::UNARY_MINUS, position, errors); }
+        else if (t == "#CALL") { buildFunctionCall(position, data, errors); }
         //Иначе
         else {
             operationCount--;
             //Проверить валидность токена
+            bool valid = true;
             for (const QChar& c : t) {
                 //Если токен не валидный
                 if (!c.isLetterOrNumber() && c != '_') {
                     //Сохранить соответствующую ошибку в массив ошибок
                     errors.append(Error(Error::UnsupportedOperation, t, "", "", -1, position));
-                    return nullptr;
+                    valid = false;
+                    break;
                 }
             }
-            //Создать узел переменной и положить его в стек
-            ExprNode* v = new ExprNode(ExprNode::VARIABLE); v->varName = t;
-            stack.push(v);
+            if (valid) {
+                //Создать узел переменной и положить его в стек
+                ExprNode* v = new ExprNode(ExprNode::VARIABLE); v->varName = t;
+                stack.push(v);
+            } else {
+                stack.push(ExprNode::makeErrorNode());
+            }
         }
     }
 
     //Если в стеке ровно один элемент и ошибок нет
-    if (stack.size() == 1 && errors.isEmpty())
+    if (stack.size() == 1)
         //Извлечь и вернуть верхний элемент стека как корень дерева
         return stack.pop();
 
@@ -111,12 +118,13 @@ bool TreeBuilder::buildBinaryOp(ExprNode::ExprType opType, int position, QList<E
     //Если элементов стека меньше двух
     if (stack.size() < 2) {
         //Сохранить соответствующую ошибку в массив ошибок
-        errors.append(Error(Error::NotEnoughOperands, "", "", "", -1, position));
-        return false;
+        errors.append(Error(Error::NotEnoughOperands, "", QString::number(stack.size()) , "", -1, position));
+        while (stack.size() < 2)
+            stack.push(ExprNode::makeErrorNode());
     }
     //Достать из стека два последних элемента из стека и сохранить их как правый и левый дочерний узел соответственно
     ExprNode* right = stack.pop();
-    ExprNode* left  = stack.pop();\
+    ExprNode* left  = stack.pop();
     //Создать узел операции переданного типа
     ExprNode* node = new ExprNode(opType);
     //Привязать к созданному узлу правый и левый дочерние узлы
@@ -127,13 +135,13 @@ bool TreeBuilder::buildBinaryOp(ExprNode::ExprType opType, int position, QList<E
     return true;
 }
 
-bool TreeBuilder::buildUnaryOp(ExprNode::ExprType opType, int position, QList<Error>& errors) {\
+bool TreeBuilder::buildUnaryOp(ExprNode::ExprType opType, int position, QList<Error>& errors) {
     //Проверить количество элементов в стеке
     //Если стек пустой
     if (stack.isEmpty()) {
         //Сохранить соответствующую ошибку в массив ошибок
-        errors.append(Error(Error::NotEnoughOperands, "", "", "", -1, position));
-        return false;
+        errors.append(Error(Error::NotEnoughOperands, "", QString::number(stack.size()) , "", -1, position));
+        stack.push(ExprNode::makeErrorNode());
     }
     //Достать из стека последний элемент и сохранить его
     ExprNode* operand = stack.pop();
@@ -151,8 +159,9 @@ bool TreeBuilder::buildNAryOp(ExprNode::ExprType opType, int position, QList<Err
     //Если элементов стека меньше двух
     if (stack.size() < 2) {
         //Сохранить соответствующую ошибку в массив ошибок
-        errors.append(Error(Error::NotEnoughOperands, "", "", "", -1, position));
-        return false;
+        errors.append(Error(Error::NotEnoughOperands, "", QString::number(stack.size()), "", -1, position));
+        while (stack.size() < 2)
+            stack.push(ExprNode::makeErrorNode());
     }
     //Достать из стека два последних элемента из стека и сохранить их как правый и левый дочерний узел соответственно
     ExprNode* right = stack.pop();
@@ -188,8 +197,8 @@ bool TreeBuilder::buildFunctionCall(int position,
     //Если стек пустой
     if (stack.isEmpty()) {
         //Сохранить соответствующую ошибку в массив ошибок
-        errors.append(Error(Error::NotEnoughOperands, "", "", "", -1, position));
-        return false;
+        errors.append(Error(Error::NotEnoughOperands, "", QString::number(stack.size()), "", -1, position));
+        stack.push(ExprNode::makeErrorNode());
     }
 
     //Достать из стека последний узел и сохранить его значение как имя функции, после чего удалить узел
@@ -202,6 +211,7 @@ bool TreeBuilder::buildFunctionCall(int position,
     if (!data.functionNames.contains(funcName)) {
         //Сохранить соответствующую ошибку в массив ошибок
         errors.append(Error(Error::UnknownFunction, funcName, "", "", -1, position));
+        stack.push(ExprNode::makeErrorNode());
         return false;
     }
 
@@ -214,7 +224,8 @@ bool TreeBuilder::buildFunctionCall(int position,
         //Сохранить соответствующую ошибку в массив ошибок
         QString dataTypeStr = QString::number(expectedArgCount) + "|" + QString::number(actualArgCount);
         errors.append(Error(Error::InvalidArgumentCount, funcName, dataTypeStr, "", -1, position));
-        return false;
+        while (stack.size() < expectedArgCount)
+            stack.push(ExprNode::makeErrorNode());
     }
 
     //Достать все элементы со стека и сохранить их в список параметров функции
@@ -222,7 +233,6 @@ bool TreeBuilder::buildFunctionCall(int position,
     for (int i = 0; i < expectedArgCount; i++) {
         args.prepend(stack.pop());
     }
-
 
     //Создать узел функции и привязать к нему список параметров функции
     //Запушить созданный узел операции в стек
