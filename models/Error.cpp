@@ -1,9 +1,9 @@
 #include "../Error.h"
 
 Error::Error(ErrorType t, const QString& identifier, const QString& dataType,
-             const QString& filePath, int column, int line)
-    : type(t), id(identifier), dataTypeStr(dataType), errorFilePath(filePath),
-    errorColumn(column), errorLine(line) {}
+             const QString& filePath, int column, int line, const QString& extra)
+    : type(t), id(identifier), dataTypeStr(dataType), extraInfo(extra),
+    errorFilePath(filePath), errorColumn(column), errorLine(line) {}
 
 QString Error::generateErrorMessage() const {
     switch (type) {
@@ -18,22 +18,24 @@ QString Error::generateErrorMessage() const {
         return "Invalid JSON format in input file " + errorFilePath + ".";
 
     case MissingRequiredField:
-        return "Required field " + id + " missing in JSON file " + errorFilePath + ".";
+        return extraInfo.isEmpty()
+                   ? "Required field '" + dataTypeStr + "' missing in object #" + id + " in JSON file " + errorFilePath + "."
+                   : "Required field '" + dataTypeStr + "' missing in object '" + extraInfo + "' (#" + id + ") in JSON file " + errorFilePath + ".";
 
     case UnsupportedType:
-        return "Unsupported data type " + dataTypeStr + " for variable " + id + " in file " + errorFilePath + ".";
+        return "Unsupported data type '" + dataTypeStr + "' in field 'type' of variable '" + extraInfo + "' in object #" + id + " in JSON file " + errorFilePath + ".";
 
     case DuplicateVariable:
-        return "Duplicate variable name " + id + " detected in file " + errorFilePath + ".";
+        return "Duplicate variable name '" + dataTypeStr + "' detected in object #" + id + " in JSON file " + errorFilePath + ".";
 
     case DuplicateFunction:
-        return "Duplicate function name " + id + " with the same parameter set detected in file " + errorFilePath + ".";
+        return "Duplicate function name '" + dataTypeStr + "' with the same parameter set detected in object #" + id + " in JSON file " + errorFilePath + ".";
 
     case EmptyVariableName:
-        return "Variable/function name cannot be empty in file " + errorFilePath + ".";
+        return "Variable/function name cannot be empty in object #" + id + " in JSON file " + errorFilePath + ".";
 
     case InvalidCharacters:
-        return "Variable/function " + id + " contains invalid characters in field " + dataTypeStr + " in file " + errorFilePath + ".";
+        return "Invalid characters '" + extraInfo + "' in field '" + dataTypeStr + "' of object #" + id + " in JSON file " + errorFilePath + ".";
 
     case MissingArguments:
         return errorColumn == 0

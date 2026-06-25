@@ -44,8 +44,9 @@ public:
     };
 
     ErrorType type;       ///< Тип ошибки
-    QString id;           ///< Идентификатор (имя переменной, функции или операции)
-    QString dataTypeStr;  ///< Строка с типом данных или дополнительной информацией
+    QString id;           ///< Номер объекта в JSON (1-based) или идентификатор для не-JSON ошибок
+    QString dataTypeStr;  ///< Имя проблемного поля или тип данных
+    QString extraInfo;    ///< Дополнительная информация (невалидное значение, имя переменной и т.д.)
     QString errorFilePath;///< Путь к файлу, в котором возникла ошибка
     int errorColumn;      ///< Номер столбца (позиция в строке)
     int errorLine;        ///< Номер строки или позиция в выражении
@@ -53,14 +54,16 @@ public:
     /*!
      * \brief Конструктор ошибки.
      * \param[in] t Тип ошибки
-     * \param[in] identifier Идентификатор (имя переменной, функции и т.д.)
-     * \param[in] dataType Строка с типом данных или доп. информацией
+     * \param[in] identifier Номер объекта в JSON или идентификатор
+     * \param[in] dataType Имя проблемного поля или тип данных
      * \param[in] filePath Путь к файлу
      * \param[in] column Номер столбца
      * \param[in] line Номер строки или позиция в выражении
+     * \param[in] extra Дополнительная информация
      */
     explicit Error(ErrorType t, const QString& identifier = "", const QString& dataType = "",
-          const QString& filePath = "", int column = -1, int line = -1);
+                   const QString& filePath = "", int column = -1, int line = -1,
+                   const QString& extra = "");
 
     /*!
      * \brief Генерирует текстовое сообщение об ошибке.

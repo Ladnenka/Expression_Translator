@@ -28,9 +28,7 @@ JsonDataLoader::loadFromJson(const QString& varsPath, const QString& funcsPath, 
         }
 
         //Вызвать метод загрузки переменных
-        if (!loadVariables(document.array(), varsPath, data, errors)) {
-            return data;
-        }
+        loadVariables(document.array(), varsPath, data, errors);
     }
 
     //Если путь к файлу функций не пустой
@@ -56,9 +54,7 @@ JsonDataLoader::loadFromJson(const QString& varsPath, const QString& funcsPath, 
         }
 
         //Вызвать метод загрузки функций
-        if (!loadFunctions(document.array(), funcsPath, data, errors)) {
-            return data;
-        }
+        loadFunctions(document.array(), funcsPath, data, errors);
     }
     //Возвратить заполненную структуру data
     return data;
@@ -67,103 +63,132 @@ JsonDataLoader::loadFromJson(const QString& varsPath, const QString& funcsPath, 
 bool JsonDataLoader::loadVariables(const QJsonArray& array, const QString& filePath,
                                    AbstractTranslator::TranslateContext::LoadedData& data, QList<Error>& errors) {
     QSet<QString> alreadyUsedNames;
+    bool hasErrors = false;
 
     for (int i = 0; i < array.size(); i++) {
         QJsonObject object = array[i].toObject();
+        bool objectHasError = false;
+        QString objNum = QString::number(i + 1);
 
         //проверяем name и description
-        if (!checkCommonFields(object, filePath, errors)) return false;
+        if (!checkCommonFields(object, objNum, filePath, errors)) {
+            objectHasError = true;
+            hasErrors = true;
+        }
 
         //если объект содержит поле parameters, то это функция, а не переменная
         if (object.contains("parameters")) {
-            errors.append(Error(Error::MissingRequiredField, "type", "", filePath));
-            return false;
+            errors.append(Error(Error::MissingRequiredField, objNum, "type", filePath, -1, -1, object["name"].toString()));
+            objectHasError = true;
+            hasErrors = true;
         }
-
-        QString name = object["name"].toString();
-
         //нет поля type
-        if (!object.contains("type")) {
-            errors.append(Error(Error::MissingRequiredField, "type", "", filePath));
-            return false;
+        else if (!object.contains("type")) {
+            errors.append(Error(Error::MissingRequiredField, objNum, "type", filePath, -1, -1, object["name"].toString()));
+            objectHasError = true;
+            hasErrors = true;
+        } else {
+            QString name = object["name"].toString();
+            QString type = object["type"].toString();
+
+            //неподдерживаемый тип
+            if (!isSupportedType(type)) {
+                errors.append(Error(Error::UnsupportedType, objNum, type, filePath, -1, -1, name));
+                objectHasError = true;
+                hasErrors = true;
+            }
         }
 
-        QString type = object["type"].toString();
-
-        //неподдерживаемый тип
-        if (!isSupportedType(type)) {
-            errors.append(Error(Error::UnsupportedType, name, type, filePath));
-            return false;
+        //дубликат переменной — проверяем только если объект без ошибок
+        if (!objectHasError) {
+            QString name = object["name"].toString();
+            if (alreadyUsedNames.contains(name)) {
+                errors.append(Error(Error::DuplicateVariable, objNum, name, filePath));
+                hasErrors = true;
+            } else {
+                alreadyUsedNames.insert(name);
+                data.variables.append(Variable(name, object["description"].toString(), object["type"].toString()));
+            }
         }
-
-        //дубликат переменной
-        if (alreadyUsedNames.contains(name)) {
-            errors.append(Error(Error::DuplicateVariable, name, "", filePath));
-            return false;
-        }
-
-        alreadyUsedNames.insert(name);
-        data.variables.append(Variable(name, object["description"].toString(), type));
     }
 
-    return true;
+    return !hasErrors;
 }
 
 bool JsonDataLoader::loadFunctions(const QJsonArray& array, const QString& filePath,
                                    AbstractTranslator::TranslateContext::LoadedData& data, QList<Error>& errors) {
     QSet<QString> alreadyUsedSignatures;
+    bool hasErrors = false;
 
     for (int i = 0; i < array.size(); i++) {
         QJsonObject object = array[i].toObject();
+        bool objectHasError = false;
+        QString objNum = QString::number(i + 1);
 
-        if (!checkCommonFields(object, filePath, errors)) return false;
-
-        QString name = object["name"].toString();
+        if (!checkCommonFields(object, objNum, filePath, errors)) {
+            objectHasError = true;
+            hasErrors = true;
+        }
 
         if (!object.contains("parameters")) {
-            errors.append(Error(Error::MissingRequiredField, "parameters", "", filePath));
-            return false;
-        }
+            errors.append(Error(Error::MissingRequiredField, objNum, "parameters", filePath, -1, -1, object["name"].toString()));
+            objectHasError = true;
+            hasErrors = true;
+        } else {
+            QJsonArray parametersArray = object["parameters"].toArray();
+            QStringList paramNames;
+            QStringList paramTypes;
+            bool paramsHaveError = false;
 
-        QJsonArray parametersArray = object["parameters"].toArray();
-        QStringList paramNames; QStringList paramTypes;
+            for (int j = 0; j < parametersArray.size(); j++) {
+                QJsonObject param = parametersArray[j].toObject();
+                //Номер параметра для сообщений об ошибках: "2.1", "2.2" и т.д.
+                QString paramNum = objNum + "." + QString::number(j + 1);
 
-        for (int j = 0; j < parametersArray.size(); j++) {
-            QJsonObject param = parametersArray[j].toObject();
+                if (!param.contains("name")) {
+                    errors.append(Error(Error::MissingRequiredField, paramNum, "name", filePath, -1, -1, object["name"].toString()));
+                    paramsHaveError = true;
+                    hasErrors = true;
+                }
 
-            if (!param.contains("name")) {
-                errors.append(Error(Error::MissingRequiredField, "name", "", filePath));
-                return false;
+                if (!param.contains("type")) {
+                    errors.append(Error(Error::MissingRequiredField, paramNum, "type", filePath, -1, -1, object["name"].toString()));
+                    paramsHaveError = true;
+                    hasErrors = true;
+                } else {
+                    QString pType = param["type"].toString();
+                    if (!isSupportedType(pType)) {
+                        errors.append(Error(Error::UnsupportedType, paramNum, pType, filePath, -1, -1, pType));
+                        paramsHaveError = true;
+                        hasErrors = true;
+                    }
+                }
+
+                if (!paramsHaveError) {
+                    paramNames.append(param["name"].toString());
+                    paramTypes.append(param["type"].toString());
+                }
+                paramsHaveError = false;
             }
 
-            if (!param.contains("type")) {
-                errors.append(Error(Error::MissingRequiredField, "type", "", filePath));
-                return false;
+            //дубликат функции — проверяем только если объект без ошибок
+            if (!objectHasError) {
+                QString name = object["name"].toString();
+                QString signature = name + "(" + paramTypes.join(",") + ")";
+                if (alreadyUsedSignatures.contains(signature)) {
+                    errors.append(Error(Error::DuplicateFunction, objNum, name, filePath));
+                    hasErrors = true;
+                } else {
+                    alreadyUsedSignatures.insert(signature);
+                    data.functions.append(Function(name, paramNames, object["description"].toString()));
+                    data.functionNames.append(name);
+                    data.functionArgCount[name] = paramNames.size();
+                }
             }
-
-            QString pName = param["name"].toString(); QString pType = param["type"].toString();
-
-            if (!isSupportedType(pType)) {
-                errors.append(Error(Error::UnsupportedType, pType, "", filePath));
-            }
-
-            paramNames.append(pName);
-            paramTypes.append(pType);
         }
-
-        QString signature = name + "(" + paramTypes.join(",") + ")";
-
-        if (alreadyUsedSignatures.contains(signature)) {
-            errors.append(Error(Error::DuplicateFunction, name, "", filePath));
-            return false;
-        }
-
-        alreadyUsedSignatures.insert(signature);
-        data.functions.append(Function(name, paramNames, object["description"].toString()));
-        data.functionNames.append(name);
-        data.functionArgCount[name] = paramNames.size();
     }
-    return true;
+
+    return !hasErrors;
 }
 
 bool JsonDataLoader::isSupportedType(const QString& type) {
@@ -177,11 +202,15 @@ bool JsonDataLoader::isSupportedType(const QString& type) {
 }
 
 // Проверка общих полей для переменной и функции: name, description
-bool JsonDataLoader::checkCommonFields(const QJsonObject& object, const QString& filePath, QList<Error>& errors) {
+bool JsonDataLoader::checkCommonFields(const QJsonObject& object, const QString& objNum,
+                                       const QString& filePath, QList<Error>& errors) {
+    bool hasErrors = false;
+
     //Если объект не содержит поля "name"
     if (!object.contains("name")) {
         //Добавить соответствующую ошибку в массив ошибок и завершить выполнение метода
-        errors.append(Error(Error::MissingRequiredField, "name", "", filePath));
+        errors.append(Error(Error::MissingRequiredField, objNum, "name", filePath));
+        //Имя неизвестно — дальнейшие проверки description бессмысленны
         return false;
     }
 
@@ -190,34 +219,34 @@ bool JsonDataLoader::checkCommonFields(const QJsonObject& object, const QString&
 
     //Если строка имени пустая
     if (name.isEmpty()) {
-        //Добавить соответствующую ошибку в массив ошибок и завершить выполнение метода
-        errors.append(Error(Error::EmptyVariableName, "", "", filePath));
-        return false;
+        //Добавить соответствующую ошибку в массив ошибок
+        errors.append(Error(Error::EmptyVariableName, objNum, "", filePath));
+        hasErrors = true;
     }
-
     //Если строка имени содержит недопустимые символы
-    if (!isValidName(name)) {
-        //Добавить в список ошибок соответствующую ошибку и завершить выполнение метода
-        errors.append(Error(Error::InvalidCharacters, name, "name", filePath));
-        return false;
+    else if (!isValidName(name)) {
+        //Добавить в список ошибок соответствующую ошибку
+        errors.append(Error(Error::InvalidCharacters, objNum, "name", filePath, -1, -1, name));
+        hasErrors = true;
     }
 
     //Проверить наличие описания у объекта
     if (!object.contains("description")) {
-        errors.append(Error(Error::MissingRequiredField, "description", "", filePath));
-        return false;
+        errors.append(Error(Error::MissingRequiredField, objNum, "description", filePath, -1, -1, name));
+        hasErrors = true;
+    } else {
+        //Извлечь значение поля "description" и проверить его на валидность
+        //Если описание содержит недопустимые символы
+        QString description = object["description"].toString();
+        if (!isValidDescription(description)) {
+            //Добавить в список ошибок соответствующую ошибку
+            errors.append(Error(Error::InvalidCharacters, objNum, "description", filePath, -1, -1, description));
+            hasErrors = true;
+        }
     }
 
-    //Извлечь значение поля "description" и проверить его на валидность
-    //Если описание содержит недопустимые символы
-    QString description = object["description"].toString();
-    if (!isValidDescription(description)) {
-        //Добавить в список ошибок ошибку соответствующую ошибку и завершить выполнение метода
-        errors.append(Error(Error::InvalidCharacters, name, "description", filePath));
-        return false;
-    }
     //Вернуть признак пройденных проверок
-    return true;
+    return !hasErrors;
 }
 
 bool JsonDataLoader::isValidName(const QString& name) {
