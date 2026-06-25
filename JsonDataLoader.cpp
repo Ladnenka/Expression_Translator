@@ -62,28 +62,33 @@ JsonDataLoader::loadFromJson(const QString& varsPath, const QString& funcsPath, 
 
 bool JsonDataLoader::loadVariables(const QJsonArray& array, const QString& filePath,
                                    AbstractTranslator::TranslateContext::LoadedData& data, QList<Error>& errors) {
+    //Создать множество уже использованных имён
     QSet<QString> alreadyUsedNames;
     bool hasErrors = false;
 
+    //Для каждого элемента JSON-массива
     for (int i = 0; i < array.size(); i++) {
+        //Преобразовать текущий элемент в JSON-объект
         QJsonObject object = array[i].toObject();
         bool objectHasError = false;
         QString objNum = QString::number(i + 1);
 
-        //проверяем name и description
+        //Выполнить проверку общих полей
+        //Если проверка не была пройдена
         if (!checkCommonFields(object, objNum, filePath, errors)) {
+            //Добавить соответствующую ошибку в массив ошибок
             objectHasError = true;
             hasErrors = true;
         }
-
-        //если объект содержит поле parameters, то это функция, а не переменная
         if (object.contains("parameters")) {
+            //Добавить соответствующую ошибку в массив ошибок
             errors.append(Error(Error::MissingRequiredField, objNum, "type", filePath, -1, -1, object["name"].toString()));
             objectHasError = true;
             hasErrors = true;
         }
-        //нет поля type
+        //Если объект не содержит поля "type"
         else if (!object.contains("type")) {
+            //Добавить соответствующую ошибку в массив ошибок
             errors.append(Error(Error::MissingRequiredField, objNum, "type", filePath, -1, -1, object["name"].toString()));
             objectHasError = true;
             hasErrors = true;
@@ -91,22 +96,27 @@ bool JsonDataLoader::loadVariables(const QJsonArray& array, const QString& fileP
             QString name = object["name"].toString();
             QString type = object["type"].toString();
 
-            //неподдерживаемый тип
+            //Если тип переменной не является поддерживаемым
             if (!isSupportedType(type)) {
+                //Добавить соответствующую ошибку в массив ошибок
                 errors.append(Error(Error::UnsupportedType, objNum, type, filePath, -1, -1, name));
                 objectHasError = true;
                 hasErrors = true;
             }
         }
 
-        //дубликат переменной — проверяем только если объект без ошибок
+        //Проверить переменную на дубликат
         if (!objectHasError) {
             QString name = object["name"].toString();
+            //Если множество уже использованных имён содержит текущее имя
             if (alreadyUsedNames.contains(name)) {
+                //Добавить соответствующую ошибку в массив ошибок
                 errors.append(Error(Error::DuplicateVariable, objNum, name, filePath));
                 hasErrors = true;
             } else {
+                //Добавить текущее имя в множество уже использованных имён
                 alreadyUsedNames.insert(name);
+                //Создать объект Variable с именем, описанием и типом и добавить его в список переменных структуры
                 data.variables.append(Variable(name, object["description"].toString(), object["type"].toString()));
             }
         }
@@ -117,35 +127,48 @@ bool JsonDataLoader::loadVariables(const QJsonArray& array, const QString& fileP
 
 bool JsonDataLoader::loadFunctions(const QJsonArray& array, const QString& filePath,
                                    AbstractTranslator::TranslateContext::LoadedData& data, QList<Error>& errors) {
+    //Создать пустое множество уже использованных сигнатур функций
     QSet<QString> alreadyUsedSignatures;
     bool hasErrors = false;
 
+    //Для каждого элемента JSON-массива
     for (int i = 0; i < array.size(); i++) {
+        //Преобразовать текущий элемент в JSON-объект
         QJsonObject object = array[i].toObject();
         bool objectHasError = false;
         QString objNum = QString::number(i + 1);
 
+        //Выполнить проверку общих полей
+        //Если проверка не была пройдена
         if (!checkCommonFields(object, objNum, filePath, errors)) {
+            //Добавить соответствующую ошибку в массив ошибок
             objectHasError = true;
             hasErrors = true;
         }
 
+        //Если объект не содержит поля "parameters"
         if (!object.contains("parameters")) {
+            //Добавить соответствующую ошибку в массив ошибок
             errors.append(Error(Error::MissingRequiredField, objNum, "parameters", filePath, -1, -1, object["name"].toString()));
             objectHasError = true;
             hasErrors = true;
         } else {
+            //Извлечь массив параметров функции
             QJsonArray parametersArray = object["parameters"].toArray();
             QStringList paramNames;
             QStringList paramTypes;
             bool paramsHaveError = false;
 
+            //Для каждого параметра из массива параметров
             for (int j = 0; j < parametersArray.size(); j++) {
+                //Преобразовать параметр в JSON-объект
                 QJsonObject param = parametersArray[j].toObject();
                 //Номер параметра для сообщений об ошибках: "2.1", "2.2" и т.д.
                 QString paramNum = objNum + "." + QString::number(j + 1);
 
+                //Если объект параметра не содержит поля "name"
                 if (!param.contains("name")) {
+                    //Добавить соответствующую ошибку в массив ошибок
                     errors.append(Error(Error::MissingRequiredField, paramNum, "name", filePath, -1, -1, object["name"].toString()));
                     paramsHaveError = true;
                     hasErrors = true;
@@ -164,6 +187,7 @@ bool JsonDataLoader::loadFunctions(const QJsonArray& array, const QString& fileP
                     }
                 }
 
+                //Добавить имя параметра в список имён и добавить тип параметра в список типов
                 if (!paramsHaveError) {
                     paramNames.append(param["name"].toString());
                     paramTypes.append(param["type"].toString());
@@ -171,17 +195,24 @@ bool JsonDataLoader::loadFunctions(const QJsonArray& array, const QString& fileP
                 paramsHaveError = false;
             }
 
-            //дубликат функции — проверяем только если объект без ошибок
+            //Проверяем функцию на дубликат, если ошибок не было обнаружено
             if (!objectHasError) {
                 QString name = object["name"].toString();
+                //Сформировать строку сигнатуры вида "имя(тип1,тип2,...)"
                 QString signature = name + "(" + paramTypes.join(",") + ")";
+                //Если множество уже использованных сигнатур содержит текущую сигнатуру
                 if (alreadyUsedSignatures.contains(signature)) {
+                    //Добавить соответствующую ошибку в массив ошибок и завершить выполнение метода
                     errors.append(Error(Error::DuplicateFunction, objNum, name, filePath));
                     hasErrors = true;
                 } else {
+                    //Добавить сигнатуру в множество уже использованных сигнатур
                     alreadyUsedSignatures.insert(signature);
+                    //Создать объект Function с именем, списком имён параметров и описанием и добавить его в список функций структуры данных
                     data.functions.append(Function(name, paramNames, object["description"].toString()));
+                    //Добавить имя функции в список имён функций структуры данных
                     data.functionNames.append(name);
+                    //Записать количество аргументов функции в хеш-таблицу структуры
                     data.functionArgCount[name] = paramNames.size();
                 }
             }
