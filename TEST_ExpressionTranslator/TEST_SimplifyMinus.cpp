@@ -27,6 +27,7 @@ private slots:
     void Test15_BranchB_SimplifyPlusExpandsMinus();
     void Test16_Complex_BranchA_RightMinus();
     void Test17_BranchA_DoubleNegation();
+    void Test18_RightDoubleUnaryMinus();
 };
 
 //Test 1: Var(a) — не MINUS, ничего не меняется
@@ -476,6 +477,31 @@ void TEST_SimplifyMinus::Test17_BranchA_DoubleNegation() {
     QCOMPARE(root->operands[1]->varName, QString("b"));
     QCOMPARE(root->operands[2]->type, ExprNode::VARIABLE);
     QCOMPARE(root->operands[2]->varName, QString("c"));
+
+    delete root;
+}
+
+//Test 18: Minus(Var(a), UnaryMinus(UnaryMinus(Var(b))))
+//        → simplifyUnaryMinus срабатывает на правом: --b → b
+void TEST_SimplifyMinus::Test18_RightDoubleUnaryMinus() {
+    ExprNode* b = new ExprNode(ExprNode::VARIABLE); b->varName = "b";
+    ExprNode* um1 = new ExprNode(ExprNode::UNARY_MINUS);
+    um1->operands.append(b);
+    ExprNode* um2 = new ExprNode(ExprNode::UNARY_MINUS);
+    um2->operands.append(um1);
+
+    ExprNode* root = new ExprNode(ExprNode::MINUS);
+    ExprNode* a = new ExprNode(ExprNode::VARIABLE); a->varName = "a";
+    root->operands.append(a);
+    root->operands.append(um2);
+
+    TreeSimplifier::simplify(root);
+
+    QCOMPARE(root->type, ExprNode::MINUS);
+    QCOMPARE(root->operands.size(), 2);
+    QCOMPARE(root->operands[0]->varName, QString("a"));
+    QCOMPARE(root->operands[1]->type, ExprNode::VARIABLE);
+    QCOMPARE(root->operands[1]->varName, QString("b"));
 
     delete root;
 }
