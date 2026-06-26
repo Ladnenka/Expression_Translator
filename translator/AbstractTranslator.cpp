@@ -11,12 +11,11 @@ AbstractTranslator::~AbstractTranslator() { delete context; }
 AbstractTranslator::TranslateContext::LoadedData::LoadedData() {}
 
 QString AbstractTranslator::translateExpression(ExprNode* root) {
-
+    //Очистить строки, добавляемые до и после результата перевода
     preLines.clear();
     postLines.clear();
-
+    //Перевести дерево выражения и объединить результат с дополнительными строками
     QString mainResult = translate(root);
-
     return (preLines + QStringList{mainResult} + postLines).join("\n");
 }
 

@@ -66,6 +66,8 @@ QString EnglishTranslator::EnglishTranslateContext::getVarType(const QString& va
 
 bool EnglishTranslator::needParentheses(ExprNode::ExprType parentType,
                                         ExprNode::ExprType operandType) {
+    //Таблица правил расстановки скобок:
+    //для каждого типа родительского оператора задано множество типов операндов, требующих скобок
     static const QMap<ExprNode::ExprType, QSet<ExprNode::ExprType>> rules = {
                                                                              { ExprNode::DIVIDE,      { ExprNode::PLUS, ExprNode::MINUS, ExprNode::MULTIPLY, ExprNode::DIVIDE,   ExprNode::FUNCTION } },
                                                                              { ExprNode::MULTIPLY,    { ExprNode::PLUS, ExprNode::MINUS, ExprNode::DIVIDE,   ExprNode::FUNCTION                    } },
@@ -73,9 +75,11 @@ bool EnglishTranslator::needParentheses(ExprNode::ExprType parentType,
                                                                              { ExprNode::MINUS,       { ExprNode::PLUS, ExprNode::MINUS, ExprNode::MULTIPLY, ExprNode::DIVIDE,   ExprNode::FUNCTION } },
                                                                              { ExprNode::UNARY_MINUS, { ExprNode::PLUS, ExprNode::MINUS, ExprNode::MULTIPLY, ExprNode::DIVIDE,   ExprNode::FUNCTION } },
                                                                              };
-
+    //Найти правило для родительского оператора
     auto it = rules.find(parentType);
+    //Если правило не найдено — скобки не нужны
     if (it == rules.end()) return false;
+    //Проверить, входит ли тип операнда в множество требующих скобок
     return it.value().contains(operandType);
 }
 
